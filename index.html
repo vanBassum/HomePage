@@ -8,6 +8,7 @@
     <link id="bootstrap-theme" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Custom CSS -->
 	<link id="custom-theme" rel="stylesheet" href="styles-dark.css">
+	<link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
@@ -17,7 +18,10 @@
                 <div class="wide-card">
                     <div class="card-body d-flex align-items-center">
                         <h3 class="card-title vertical-center">My apps</h3>
-						<button onclick="toggleTheme()">Toggle Theme</button>
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="styleSwitch">
+                            <label class="custom-control-label" for="styleSwitch"></label>
+                        </div>
                     </div>
                 </div>
             </div>

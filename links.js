@@ -6,25 +6,25 @@ const jsonData = [
 		"icon": "logos/github.svg"
 	},
     {
-        "link": "https://keycloak.myserver.com",
+        "link": "https://www.keycloak.org/",
         "title": "Keycloak",
         "description": "Identity and access management solution",
         "icon": "logos/keycloak.svg"
     },
     {
-        "link": "https://grafana.myserver.com",
+        "link": "https://grafana.com",
         "title": "Grafana",
         "description": "Open-source analytics and monitoring platform",
         "icon": "logos/grafana.svg"
     },
     {
-        "link": "https://influxdb.myserver.com",
+        "link": "https://influxdb.com",
         "title": "InfluxDB",
         "description": "Open-source time series database",
         "icon": "logos/influxdb.svg"
     },
     {
-        "link": "https://minio.myserver.com",
+        "link": "https://minio.com",
         "title": "Minio",
         "description": "High-performance, distributed object storage server",
         "icon": "logos/minio.svg"

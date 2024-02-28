@@ -125,22 +125,37 @@ async function updateBadgeStatus(card, link) {
     }
 }
 
-function toggleTheme() {
+function setStyle(dark) {
     var bootstrapTheme = document.getElementById('bootstrap-theme');
     var customTheme = document.getElementById('custom-theme');
-    
-	console.log(customTheme);
-	
-    if (customTheme.href.includes('dark')) {
-        bootstrapTheme.href = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css';
-        customTheme.href = 'styles-light.css';
-    } else {
+    if (dark) {
         bootstrapTheme.href = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css';
         customTheme.href = 'styles-dark.css';
+    } else {
+        bootstrapTheme.href = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css';
+        customTheme.href = 'styles-light.css';
     }
 }
 
+function setupStyle() {
+    // TODO: Read preference, store in cookie? 
+    // Yeah, i dont want to deal with this annoying cookie law.
+    var darkmode = true;        
+
+    setStyle(darkmode);
+    var styleSwitch = document.getElementById('styleSwitch');
+    styleSwitch.checked = darkmode; // Reflect client's default preference
+
+    styleSwitch.addEventListener('change', function() {
+        setStyle(styleSwitch.checked);
+    });
+}
+
+
+// Assuming jsonData and createCard are defined elsewhere in your code
 jsonData.forEach(item => {
     createCard(item);
 });
 
+
+setupStyle();
