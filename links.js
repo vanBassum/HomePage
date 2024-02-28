@@ -1,11 +1,10 @@
 const jsonData = [
-
-    {
-        "link": "https://portainer.myserver.com",
-        "title": "Portainer",
-        "description": "Container management platform",
-        "icon": "logos/portainer.svg"
-    },
+	{
+		"link": "https://github.com",
+		"title": "Github",
+		"description": "GitHub is a web-based platform used for version control and collaboration.",
+		"icon": "logos/github.svg"
+	},
     {
         "link": "https://keycloak.myserver.com",
         "title": "Keycloak",
