@@ -21,3 +21,8 @@ This repository contains a simple static website that works without a server. Yo
 - If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
 
 Thank you for using this simple static website template with custom logos!
+
+Click here for an example: (Powered by github pages)
+https://vanbassum.github.io/HomePage
+
+
