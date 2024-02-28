@@ -125,6 +125,22 @@ async function updateBadgeStatus(card, link) {
     }
 }
 
+function toggleTheme() {
+    var bootstrapTheme = document.getElementById('bootstrap-theme');
+    var customTheme = document.getElementById('custom-theme');
+    
+	console.log(customTheme);
+	
+    if (customTheme.href.includes('dark')) {
+        bootstrapTheme.href = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css';
+        customTheme.href = 'styles-light.css';
+    } else {
+        bootstrapTheme.href = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css';
+        customTheme.href = 'styles-dark.css';
+    }
+}
+
 jsonData.forEach(item => {
     createCard(item);
 });
+

@@ -1,0 +1,94 @@
+body {
+  background-color: #22272E; /* Dark background color */
+  color: #fff; /* Text color */
+}
+
+.card-container {
+  margin-top: 20px;
+}
+
+.wide-card-container {
+  margin-top: 20px;
+}
+
+.wide-card,
+.link-card {
+  background-color: #444C56; /* Dark gray background color */
+  border: none; /* Remove default Bootstrap border */
+  border-radius: 10px; /* Add border radius for rounded corners */
+  box-shadow: 0px 2px 4px rgba(255, 255, 255, 0.1); /* Add a subtle shadow */
+}
+
+.link-card {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out; /* Add a slight scale effect on hover */
+  display: flex; /* Use flex display to arrange content */
+  padding: 10px; /* Add some padding for spacing */
+  position: relative; /* Position the container relative for absolute positioning */
+}
+
+.link-card .card-body {
+  padding: 0px;
+}
+
+.link-card:hover {
+  transform: scale(1.05);
+}
+
+.logo-container {
+  width: 100px; /* Set the width of the logo container */
+  height: 100px; /* Set the height of the logo container */
+  display: flex; /* Use flex display for centered content */
+  align-items: center; /* Vertically center content */
+  justify-content: center; /* Horizontally center content */
+  margin-right: 10px; /* Add margin between logo and title */
+  overflow: hidden; /* Prevent logo from overflowing the container */
+  border-radius: 25%;
+  border: 1px solid #2D333B;
+  padding: 5px;
+  flex-shrink: 0; /* Prevent logo container from shrinking */
+}
+
+.logo-img {
+  max-width: 100%; /* Set the maximum width of the logo image */
+  max-height: 100%; /* Set the maximum height of the logo image */
+  object-fit: contain; /* Maintain aspect ratio without stretching */
+}
+
+.title-content {
+  flex-grow: 1;
+  padding-right: 10px;
+  position: relative;
+  max-height: 100px; /* Limit the height of the title content */
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  justify-content: space-between; /* Space evenly between title and badge */
+}
+
+.card-title {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.card-description {
+  margin: 0;
+  color: #bbb; /* Lighter text color */
+  font-size: 13px; /* Adjust the font size */
+  line-height: 1.3; /* Adjust the line height */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1; /* Allow description to shrink */
+  margin-bottom: auto; /* Push badge to the bottom of the title-content */
+}
+
+.title-content .badge {
+  margin-top: auto; /* Push badge to the bottom of the title-content */
+  width: 65px; /* Set the width of the badge */
+}
+
+.vertical-center {
+  margin: auto; /* Vertically center the title */
+}
