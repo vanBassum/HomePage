@@ -151,16 +151,10 @@ async function updateBadgeStatus(card, link) {
 }
 
 function setStyle(dark) {
-    var bootstrapTheme = document.getElementById('bootstrap-theme');
-    var customTheme = document.getElementById('custom-theme');
-    if (dark) {
-        bootstrapTheme.href = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css';
-        customTheme.href = 'styles-dark.css';
-    } else {
-        bootstrapTheme.href = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css';
-        customTheme.href = 'styles-light.css';
-    }
+    const customTheme = document.getElementById('custom-theme');
+    customTheme.href = dark ? 'styles-dark.css' : 'styles-light.css';
 }
+
 
 function setupStyle() {
     // TODO: Read preference, store in cookie? 
