@@ -3,6 +3,7 @@ body {
   color: #fff;
 }
 
+.wide-card,
 .link-card {
   background-color: #444C56;
   box-shadow: 0px 2px 4px rgba(255, 255, 255, 0.1);

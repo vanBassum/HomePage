@@ -9,7 +9,7 @@ async function checkOnlineStatus(url) {
     }
 }
 
-function createCard(item) {
+async function createCard(item) {
     const card = document.createElement('div');
     card.classList.add('col-md-6', 'col-lg-4', 'card-container');
 
@@ -37,15 +37,27 @@ function createCard(item) {
     card.innerHTML = cardContent;
 
     const imgElement = card.querySelector('.logo-img');
-    imgElement.onerror = () => {
-        // Attempt to load the favicon as fallback
-        const fallbackFavicon = `${getRoot(item.link)}/favicon.ico`;
-        if (imgElement.src !== fallbackFavicon) {
-            imgElement.src = fallbackFavicon;
-        } else {
-            // If the favicon also fails, hide the image
-            imgElement.style.display = 'none';
+
+
+    imgElement.onerror = async function () {
+        switch (imgElement.imageTryoutState) {
+            default:
+                imgElement.src = await findGoogleFavicon(item.link);
+                imgElement.imageTryoutState = 0;
+                break;
+            case 1:
+                imgElement.src = await findRootFavicon(item.link);
+                break;
+            case 2: 
+                imgElement.src = await findHtmlFavicon(item.link);
+                break;
+            case 3:
+                imgElement.style.display = 'none'; // Hide image if no valid favicon found
+                imgElement.onerror = null; // Prevent recursion on the next error
+                break;
         }
+
+        imgElement.imageTryoutState++; // Fall through if no favicon found
     };
 
     card.querySelector('.title-content').appendChild(badgeElement);
@@ -56,21 +68,15 @@ function createCard(item) {
     if (buttonsContainer) {
         buttonsContainer.addEventListener('click', handleButtonClicked);
     }
-    
+
     cardContainer.appendChild(card);
     updateBadgeStatus(card, item.link);
 }
 
 
-function getRoot(url) {
-    try {
-        const { protocol, host } = new URL(url);
-        return `${protocol}//${host}`;
-    } catch (error) {
-        console.error('Invalid URL:', url);
-        return '';
-    }
-}
+
+
+
 
 
 function createButtons(item) {
@@ -84,10 +90,6 @@ function createButtons(item) {
         </button>
     `).join('');
 }
-
-
-
-
 
 function handleCardClick(event) {
     const clickedElement = event.target;
@@ -109,9 +111,9 @@ function handleCardAuxClick(event) {
         if (card) {
             const cardLink = card.getAttribute('data-url');
             if (cardLink) {
-                if (event.button === 0) { // Left-click
+                if (event.button === 0) {
                     window.location = cardLink.href;
-                } else if (event.button === 1) { // Middle-click
+                } else if (event.button === 1) {
                     window.open(cardLink, '_blank');
                 }
             }
@@ -122,7 +124,7 @@ function handleCardAuxClick(event) {
 function handleButtonClicked(event) {
     const button = event.target;
     const buttonUrl = button.getAttribute('data-url');
-    
+
     if (buttonUrl) {
         fetch(buttonUrl, { method: 'GET', mode: 'no-cors' })
             .then(response => {
@@ -155,26 +157,86 @@ function setStyle(dark) {
     customTheme.href = dark ? 'styles-dark.css' : 'styles-light.css';
 }
 
-
 function setupStyle() {
     // TODO: Read preference, store in cookie? 
     // Yeah, i dont want to deal with this annoying cookie law.
-    var darkmode = true;        
+    const darkmode = true; // Default preference
 
     setStyle(darkmode);
-    var styleSwitch = document.getElementById('styleSwitch');
-    styleSwitch.checked = darkmode; // Reflect client's default preference
+    const styleSwitch = document.getElementById('styleSwitch');
+    styleSwitch.checked = darkmode;
 
-    styleSwitch.addEventListener('change', function() {
+    styleSwitch.addEventListener('change', function () {
         setStyle(styleSwitch.checked);
     });
 }
 
 
-// Assuming jsonData and createCard are defined elsewhere in your code
-jsonData.forEach(item => {
-    createCard(item);
-});
+async function findHtmlFavicon(link) {
+    try {
+        const response = await fetch(link, { method: 'GET', mode: 'no-cors' });
+        if (response.ok) {
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            const iconLink = doc.querySelector('link[rel="icon"], link[rel="shortcut icon"]');
+            if (iconLink) return new URL(iconLink.getAttribute('href'), link).href;
+
+            const appleIcon = doc.querySelector('link[rel="apple-touch-icon"], link[rel="apple-touch-icon-precomposed"]');
+            if (appleIcon) return new URL(appleIcon.getAttribute('href'), link).href;
+        }
+    } catch (error) {
+        console.error(`Error fetching HTML favicon for ${link}:`, error);
+    }
+    return null;
+}
+
+async function findRootFavicon(link) {
+    const rootFavicon = `${getRoot(link)}/favicon.ico`;
+    try {
+        const response = await fetch(rootFavicon, { method: 'HEAD', mode: 'no-cors' });
+        if (response.ok || response.type === 'opaque') {
+            return rootFavicon;
+        }
+    } catch (error) {
+        console.error(`Error checking root favicon for ${link}:`, error);
+    }
+    return null;
+}
+
+async function findGoogleFavicon(link) {
+    try {
+        const domainUrl = new URL(link).origin; // Extract full origin (e.g., https://stackoverflow.com)
+        const googleIcon = `https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${domainUrl}&size=128`;
+
+        console.log(`Attempting to fetch Google favicon: ${googleIcon}`);
+
+        const response = await fetch(googleIcon, { method: 'HEAD', mode: 'no-cors' });
+        if (response.ok || response.type === 'opaque') {
+            console.log(`Google favicon found: ${googleIcon}`);
+            return googleIcon;
+        } else {
+            console.log('Google favicon not found.');
+        }
+    } catch (error) {
+        console.error(`Error checking Google favicon for ${link}:`, error);
+    }
+    return null;
+}
 
 
+
+function getRoot(url) {
+    try {
+        const { protocol, host } = new URL(url);
+        return `${protocol}//${host}`;
+    } catch (error) {
+        console.error(`Invalid URL: ${url}`, error);
+        return '';
+    }
+}
+
+// Process each item
+jsonData.forEach(item => createCard(item));
 setupStyle();
