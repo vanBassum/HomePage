@@ -35,6 +35,19 @@ function createCard(item) {
     `;
 
     card.innerHTML = cardContent;
+
+    const imgElement = card.querySelector('.logo-img');
+    imgElement.onerror = () => {
+        // Attempt to load the favicon as fallback
+        const fallbackFavicon = `${getRoot(item.link)}/favicon.ico`;
+        if (imgElement.src !== fallbackFavicon) {
+            imgElement.src = fallbackFavicon;
+        } else {
+            // If the favicon also fails, hide the image
+            imgElement.style.display = 'none';
+        }
+    };
+
     card.querySelector('.title-content').appendChild(badgeElement);
     card.addEventListener('click', handleCardClick);
     card.addEventListener('auxclick', handleCardAuxClick);
@@ -47,6 +60,18 @@ function createCard(item) {
     cardContainer.appendChild(card);
     updateBadgeStatus(card, item.link);
 }
+
+
+function getRoot(url) {
+    try {
+        const { protocol, host } = new URL(url);
+        return `${protocol}//${host}`;
+    } catch (error) {
+        console.error('Invalid URL:', url);
+        return '';
+    }
+}
+
 
 function createButtons(item) {
     if (!item.buttons) {
