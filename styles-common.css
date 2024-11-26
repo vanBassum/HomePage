@@ -29,7 +29,7 @@ body {
 .logo-img {
     width: 100%; /* Ensures it scales to fill */
     height: 100%; /* Ensures it scales to fill */
-    object-fit: cover; /* Ensures the image fills the container without distortion */
+    object-fit: contain;
 }
   
   .title-content {
