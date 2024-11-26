@@ -40,18 +40,22 @@ async function createCard(item) {
 
 
     imgElement.onerror = async function () {
+
+        if(imgElement.imageTryoutState === undefined) {
+            imgElement.imageTryoutState = 0;
+        }
+
         switch (imgElement.imageTryoutState) {
-            default:
+            case 0:
                 imgElement.src = await findGoogleFavicon(item.link);
-                imgElement.imageTryoutState = 0;
                 break;
             case 1:
                 imgElement.src = await findRootFavicon(item.link);
                 break;
-            case 2: 
+            case 2:
                 imgElement.src = await findHtmlFavicon(item.link);
                 break;
-            case 3:
+            default:
                 imgElement.style.display = 'none'; // Hide image if no valid favicon found
                 imgElement.onerror = null; // Prevent recursion on the next error
                 break;
@@ -72,12 +76,6 @@ async function createCard(item) {
     cardContainer.appendChild(card);
     updateBadgeStatus(card, item.link);
 }
-
-
-
-
-
-
 
 function createButtons(item) {
     if (!item.buttons) {

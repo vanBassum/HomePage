@@ -20,16 +20,17 @@ body {
     justify-content: center;
     margin-right: 10px;
     overflow: hidden;
-    border-radius: 25%;
-    padding: 5px;
+    border-radius: 25%; /* Keeps the circular look */
+    padding: 0; /* Removed padding to avoid gaps */
     flex-shrink: 0;
-  }
-  
-  .logo-img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-  }
+    background-color: #f0f0f0; /* Optional: background color for contrast */
+}
+
+.logo-img {
+    width: 100%; /* Ensures it scales to fill */
+    height: 100%; /* Ensures it scales to fill */
+    object-fit: cover; /* Ensures the image fills the container without distortion */
+}
   
   .title-content {
     flex-grow: 1;
