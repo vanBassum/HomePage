@@ -20,15 +20,15 @@ body {
     justify-content: center;
     margin-right: 10px;
     overflow: hidden;
-    border-radius: 25%; /* Keeps the circular look */
+    border-radius: 15%; /* Keeps the circular look */
     padding: 0; /* Removed padding to avoid gaps */
     flex-shrink: 0;
     background-color: #f0f0f0; /* Optional: background color for contrast */
 }
 
 .logo-img {
-    width: 95%;
-    height: 95%;
+    width: 90%;
+    height: 90%;
     object-fit: contain;
 }
   

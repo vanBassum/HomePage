@@ -36,36 +36,21 @@ async function createCard(item) {
 
     card.innerHTML = cardContent;
 
-    const imgElement = card.querySelector('.logo-img');
-    imgElement.imageTryoutState = 0; // Initialize state
-
+    const imgElement = card.querySelector('.logo-img');	
+    imgElement.fallback = 0; // Initialize before setting src
     imgElement.onerror = async function () {
-        switch (imgElement.imageTryoutState) {
-            case 0: // Apple icon
-                console.log('Attempting to fetch Apple icon...');
-                imgElement.src = await findAppleIconFromHtml(item.link) || imgElement.src;
-                break;
-            case 1: // Google favicon
-                console.log('Attempting to fetch Google favicon...');
-                imgElement.src = await findGoogleFavicon(item.link) || imgElement.src;
-                break;
-            case 2: // Root favicon
-                console.log('Attempting to fetch root favicon...');
-                imgElement.src = await findRootFavicon(item.link) || imgElement.src;
-                break;
-            case 3: // HTML favicon
-                console.log('Attempting to fetch HTML favicon...');
-                imgElement.src = await findFaviconFromHtml(item.link) || imgElement.src;
-                break;
-            default: // No valid favicon found
-                console.log('All favicon attempts failed. Hiding image.');
-                imgElement.style.display = 'none';
-                imgElement.onerror = null; // Prevent further recursion
-                break;
+        const nextUrl =  getNextBackupIconUrl(item, imgElement.fallback);
+        console.log(`Trying backup URL: ${nextUrl}`);
+        if (nextUrl) {
+            imgElement.src = nextUrl;
+            imgElement.fallback++;
+        } else {
+            imgElement.src = blank;
+            imgElement.onerror = null; // Prevent loop
         }
-
-        imgElement.imageTryoutState++; // Increment state
     };
+
+    
 
     card.querySelector('.title-content').appendChild(badgeElement);
     card.addEventListener('click', handleCardClick);
@@ -173,80 +158,6 @@ function setupStyle() {
     });
 }
 
-async function findFaviconFromHtml(link) {
-    try {
-        const homepage = getRoot(link);
-        const response = await fetch(homepage, { method: 'GET', mode: 'no-cors' });
-        if (response.ok) {
-            const html = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-
-            const iconLink = doc.querySelector('link[rel="icon"], link[rel="shortcut icon"]');
-            if (iconLink) {
-                return new URL(iconLink.getAttribute('href'), homepage).href;
-            }
-        }
-    } catch (error) {
-        console.error(`Error fetching standard favicon for ${link}:`, error);
-    }
-    return null;
-}
-
-async function findAppleIconFromHtml(link) {
-    try {
-        const homepage = getRoot(link);
-        const response = await fetch(homepage, { method: 'GET', mode: 'no-cors' });
-        if (response.ok) {
-            const html = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-
-            const appleIcon = doc.querySelector('link[rel="apple-touch-icon"], link[rel="apple-touch-icon-precomposed"]');
-            if (appleIcon) {
-                return new URL(appleIcon.getAttribute('href'), homepage).href;
-            }
-        }
-    } catch (error) {
-        console.error(`Error fetching Apple icon for ${link}:`, error);
-    }
-    return null;
-}
-
-
-
-async function findRootFavicon(link) {
-    const rootFavicon = `${getRoot(link)}/favicon.ico`;
-    try {
-        const response = await fetch(rootFavicon, { method: 'HEAD', mode: 'no-cors' });
-        if (response.ok || response.type === 'opaque') {
-            return rootFavicon;
-        }
-    } catch (error) {
-        console.error(`Error checking root favicon for ${link}:`, error);
-    }
-    return null;
-}
-
-async function findGoogleFavicon(link) {
-    try {
-        const domainUrl = new URL(link).origin; // Extract full origin (e.g., https://stackoverflow.com)
-        const googleIcon = `https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${domainUrl}&size=128`;
-        const response = await fetch(googleIcon, { method: 'HEAD', mode: 'no-cors' });
-        if (response.ok || response.type === 'opaque') {
-            console.log(`Google favicon found: ${googleIcon}`);
-            return googleIcon;
-        } else {
-            console.log('Google favicon not found.');
-        }
-    } catch (error) {
-        console.error(`Error checking Google favicon for ${link}:`, error);
-    }
-    return null;
-}
-
-
-
 function getRoot(url) {
     try {
         const { protocol, host } = new URL(url);
@@ -256,6 +167,24 @@ function getRoot(url) {
         return '';
     }
 }
+
+function getNextBackupIconUrl(item, index) {
+    const simpleName = (item.name || item.title || '').toLowerCase().replace(/\s+/g, '');
+    const root = getRoot(item.link);
+
+    const urls = [
+        `https://cdn.simpleicons.org/${simpleName}`,
+        `${root}/favicon.ico`
+    ];
+
+    if (index >= urls.length) {
+        return null; // All URLs failed
+    }
+
+    return urls[index];
+}
+
+
 
 // Process each item
 jsonData.forEach(item => createCard(item));
