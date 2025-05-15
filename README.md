@@ -18,14 +18,17 @@ This repository contains a simple static website that works without a server. Yo
 
 3. **Open `index.html`**: Once you have customized the links and logos, simply open the `index.html` file in your preferred web browser.
 
-4. **Favicon Fallback Logic**:
-   - If the provided logo URL fails to load, the application automatically attempts to fetch the favicon using the following order:
-     1. **Google Favicon Service**: 
-        Fetches a high-quality favicon using Google's service:
-        `https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=[DOMAIN]&size=128`.
-     2. **HTML `<link>` Tag**: Parses the target domain's HTML to find any favicon defined in `<link rel="icon">` or similar tags.
-     3. **Root Favicon**: Tries the common `favicon.ico` located at the root of the domain.
-   - If all attempts fail, the logo container is hidden to ensure a clean UI.
+## Favicon Fallback Logic:
+
+If the main icon fails, fallback URLs are tried in order:
+
+1. **SimpleIcons CDN**:
+   `https://cdn.simpleicons.org/[service-name]`
+
+2. **Root Favicon**:
+   `[protocol]://[host]/favicon.ico`
+
+If all fail, the icon is hidden to keep the UI clean.
 
 ## Additional Notes
 
