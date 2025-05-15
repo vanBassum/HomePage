@@ -2,6 +2,8 @@
 
 This repository contains a simple static website that works without a server. You can easily download the files, customize the links and logos you want to display, and open the `index.html` file in your web browser to see the changes.
 
+See [https://vanbassum.github.io/HomePage](https://vanbassum.github.io/HomePage) for a live example hosted on GitHub Pages.
+
 ## Features
 
 - Displays custom links with corresponding logos or favicons.
@@ -35,8 +37,3 @@ If all fail, the icon is hidden to keep the UI clean.
 - This static website is designed to be simple and easy to use.
 - You can customize the HTML, CSS, and JavaScript files further to suit your specific needs.
 - If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
-
-
-## Live Example
-
-See [https://vanbassum.github.io/HomePage](https://vanbassum.github.io/HomePage) for a live example hosted on GitHub Pages.
