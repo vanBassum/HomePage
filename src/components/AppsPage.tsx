@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import type { AppLink } from "@/components/models/AppLink"
 import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -6,17 +6,11 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { AppCard } from "@/components/AppCard"
 import { NewAppCard } from "@/components/NewAppCard"
 import { useMode } from "@/components/mode/mode-provider"
-
-
+import { EditAppDialog } from "@/components/EditAppDialog"
 
 type HeaderBarProps = {
   query: string
   setQuery: (q: string) => void
-  filtered: AppLink[]
-  apps: AppLink[]
-  category: string
-  setCategory: (c: string) => void
-  categories: string[]
 }
 
 function HeaderBar({ query, setQuery }: HeaderBarProps) {
@@ -46,62 +40,119 @@ function HeaderBar({ query, setQuery }: HeaderBarProps) {
   )
 }
 
-
 type AppPageProps = {
   apps: AppLink[]
 }
 
+function newId() {
+  return crypto?.randomUUID?.() ?? `tmp-${Math.random().toString(16).slice(2)}`
+}
+
 export function MyAppsPage({ apps }: AppPageProps) {
-  const { mode } = useMode()   // ← consume mode
+  const { mode } = useMode()
+
+  // local list so dialog edits reflect immediately in UI
+  const [items, setItems] = useState<AppLink[]>(apps)
+  useEffect(() => setItems(apps), [apps])
 
   const [query, setQuery] = useState("")
   const [category, setCategory] = useState<string>("All")
 
+  // dialog state
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [editing, setEditing] = useState<AppLink | null>(null)
+
   const categories = useMemo(() => {
     const set = new Set<string>()
-    for (const a of apps) if (a.category) set.add(a.category)
+    for (const a of items) if (a.category) set.add(a.category)
     return ["All", ...Array.from(set).sort((a, b) => a.localeCompare(b))]
-  }, [apps])
+  }, [items])
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return apps.filter((a) => {
+    return items.filter((a) => {
       const matchCategory = category === "All" ? true : a.category === category
       const matchQuery =
         !q ||
         a.title.toLowerCase().includes(q) ||
-        a.description.toLowerCase().includes(q) ||
+        (a.description ?? "").toLowerCase().includes(q) ||
         a.link.toLowerCase().includes(q)
       return matchCategory && matchQuery
     })
-  }, [apps, query, category])
+  }, [items, query, category])
+
+  // Called by AppCard in edit mode: onEdit(app)
+  const handleEdit = (app: AppLink) => {
+    setEditing(app)
+    setDialogOpen(true)
+  }
+
+  const handleCreate = () => {
+    const blank: AppLink = {
+      id: "", // empty => "New"
+      name: "",
+      title: "",
+      description: "",
+      link: "",
+      iconUrl: undefined,
+      buttons: [],
+      status: "unknown",
+      category: "",
+    }
+    setEditing(blank)
+    setDialogOpen(true)
+  }
+
+  const handleSave = (next: AppLink) => {
+    setItems((prev) => {
+      // create
+      if (!next.id) {
+        const created = { ...next, id: newId() }
+        return [created, ...prev]
+      }
+
+      // update
+      const idx = prev.findIndex((x) => x.id === next.id)
+      if (idx === -1) return [next, ...prev]
+
+      const copy = [...prev]
+      copy[idx] = next
+      return copy
+    })
+  }
+
+  const handleDelete = (id: string) => {
+    setItems((prev) => prev.filter((x) => x.id !== id))
+  }
 
   return (
     <div className="flex h-full flex-col">
-      <HeaderBar
-        query={query}
-        setQuery={setQuery}
-        filtered={filtered}
-        apps={apps}
-        category={category}
-        setCategory={setCategory}
-        categories={categories}
-      />
+      <HeaderBar query={query} setQuery={setQuery} />
 
       <ScrollArea className="flex-1">
         <div className="px-6 py-6">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {filtered.map((app) => (
-              <AppCard key={app.id} app={app} />
+              <AppCard key={app.id} app={app} onEdit={handleEdit} />
             ))}
 
-            {mode === "edit" && (
-              <NewAppCard onCreate={() => alert("Create new app")} />
-            )}
+            {mode === "edit" && <NewAppCard onCreate={handleCreate} />}
           </div>
         </div>
       </ScrollArea>
+
+      {editing && (
+        <EditAppDialog
+          open={dialogOpen}
+          onOpenChange={(open) => {
+            setDialogOpen(open)
+            if (!open) setEditing(null)
+          }}
+          value={editing}
+          onSave={handleSave}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   )
 }
-
