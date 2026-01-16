@@ -29,5 +29,5 @@
       ]
     }
   },
-  "include": ["src", "src/components/api/statsApi/.ts"]
+  "include": ["src", "src/components/api/statsApi/.ts", "shared/models/AppRecord.ts"]
 }
