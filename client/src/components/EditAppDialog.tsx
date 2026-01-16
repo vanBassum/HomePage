@@ -2,7 +2,7 @@ import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { EditAppForm } from "@/components/EditAppForm"
-import type { AppRecord } from "@shared/models/AppRecord"
+import type { AppRecord } from "homepage-shared"
 
 type EditAppDialogProps = {
   open: boolean

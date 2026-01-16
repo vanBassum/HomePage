@@ -5,7 +5,7 @@ import { checkAppStatus, openUrl, type AppStatus } from "@/lib/utils"
 import { useMode } from "@/components/mode/mode-provider"
 import { ClickableCard } from "@/components/ClickableCard"
 import React from "react"
-import type { AppRecord } from "@shared/models/AppRecord"
+import type { AppRecord } from "homepage-shared"
 
 function statusBadgeVariant(status: AppStatus) {
   switch (status) {

@@ -14,7 +14,7 @@
         "@fastify/static": "^7.0.0",
         "better-sqlite3": "^11.0.0",
         "fastify": "^4.26.0",
-        "@shared": "workspace:*"
+        "homepage-shared": "file:../shared"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.2",

@@ -1,5 +1,5 @@
 import type Database from "better-sqlite3";
-import type { AppRecord } from "@shared/models/AppRecord";
+import type { AppRecord } from "homepage-shared";
 
 export type CreateAppInput = Omit<AppRecord, "id">;
 

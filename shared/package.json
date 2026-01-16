@@ -1,6 +1,9 @@
 {
-    "name": "@shared",
-    "version": "0.0.0",
-    "private": true
+  "name": "homepage-shared",
+  "version": "0.0.0",
+  "private": true,
+  "types": "index.ts",
+  "exports": {
+    ".": "./index.ts"
   }
-  
+}

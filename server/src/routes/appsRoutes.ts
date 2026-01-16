@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import type { AppRecord } from "@shared/models/AppRecord";
+import type { AppRecord } from "homepage-shared";
 import type { CreateAppInput } from "../repos/appsRepo";
 import { AppsRepo } from "../repos/appsRepo";
 

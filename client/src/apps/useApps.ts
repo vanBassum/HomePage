@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { AppRecord } from "@shared/models/AppRecord";
+import type { AppRecord } from "homepage-shared";
 import type { CreateAppRequest } from "@/api/AppsApi";
 import { useApi } from "@/api/useApi";
 

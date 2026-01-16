@@ -7,7 +7,7 @@ import { NewAppCard } from "@/components/NewAppCard"
 import { useMode } from "@/components/mode/mode-provider"
 import { EditAppDialog } from "@/components/EditAppDialog"
 import { useApps } from "@/apps/useApps"
-import type { AppRecord } from "@shared/models/AppRecord"
+import type { AppRecord } from "homepage-shared"
 
 type HeaderBarProps = {
   query: string

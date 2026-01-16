@@ -1,5 +1,5 @@
 // src/api/AppsApi.ts
-import type { AppRecord } from "@shared/models/AppRecord";
+import type { AppRecord } from "homepage-shared";
 import { BaseApi } from "./BaseApi";
 
 export type CreateAppRequest = Omit<AppRecord, "id">;

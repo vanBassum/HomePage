@@ -12,7 +12,6 @@
   
       "baseUrl": ".",
       "paths": {
-        "@shared/*": ["../shared/*"]
       },
   
       "outDir": "dist"
