@@ -13,6 +13,9 @@
     # Install all deps INCLUDING dev (needed for tsc/vite)
     RUN npm ci --include=dev
     
+    # Workaround: ensure Rollup native binary exists on Linux x64 (npm optional deps bug)
+    RUN npm -w client i --no-save @rollup/rollup-linux-x64-gnu
+    
     # Copy full source
     COPY . .
     
@@ -29,16 +32,12 @@
     ENV PORT=8080
     ENV CLIENT_DIST_DIR=/app/client_dist
     
-    # Copy manifests needed to install server prod deps
     COPY package.json package-lock.json ./
     COPY server/package*.json server/
     COPY shared/package*.json shared/
     
-    # Install only server production deps
-    # (This assumes server workspace depends on shared via workspaces)
     RUN npm ci --omit=dev -w server
     
-    # Copy build output
     COPY --from=build /repo/server/dist ./dist
     COPY --from=build /repo/client/dist ./client_dist
     
