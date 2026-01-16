@@ -1,12 +1,9 @@
-
-
-export type AppLink = {
-  id: string
+export type AppRecord = {
+  id: string 
   name: string
   title: string
   description: string
   link: string
   iconUrl?: string
-  status?: "online" | "offline" | "unknown"
   category?: string
 }

@@ -2,7 +2,7 @@ import { Routes, Route, useLocation } from "react-router-dom"
 import { ThemeProvider } from "@/components/theme/theme-provider"
 import { Toaster } from "sonner"
 import { Shell } from "@/components/Shell"
-import { MyAppsPage } from "@/components/AppsPage"
+import { MyAppsPage } from "@/components/MyAppsPage"
 import { ModeProvider } from "@/components/mode/mode-provider"
 
 function App() {

@@ -76,7 +76,6 @@ export function MyAppsPage() {
       description: "",
       link: "",
       iconUrl: undefined,
-      buttons: [],
       status: "unknown",
       category: "",
     }

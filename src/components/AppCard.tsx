@@ -2,9 +2,10 @@ import type { AppLink } from "@/components/models/AppLink"
 import { Signal } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { openUrl } from "@/lib/utils"
+import { checkAppStatus, openUrl, type AppStatus } from "@/lib/utils"
 import { useMode } from "@/components/mode/mode-provider"
 import { ClickableCard } from "@/components/ClickableCard"
+import React from "react"
 
 function statusBadgeVariant(status: AppLink["status"]) {
   switch (status) {
@@ -41,10 +42,46 @@ type AppCardProps = {
   onEdit?: (app: AppLink) => void
 }
 
+const statusCache = new Map<string, AppStatus>()
+
 export function AppCard({ app, onEdit }: AppCardProps) {
-  const badge = statusBadgeVariant(app.status)
   const { mode } = useMode()
   const isEdit = mode === "edit"
+
+  const [status, setStatus] = React.useState<AppLink["status"]>(() => {
+    if (!app.link) return "unknown"
+    return statusCache.get(app.link) ?? "unknown"
+  })
+
+  React.useEffect(() => {
+    let cancelled = false
+    const url = app.link
+    if (!url) {
+      setStatus("unknown")
+      return
+    }
+
+    const cached = statusCache.get(url)
+    if (cached) {
+      setStatus(cached)
+      return
+    }
+
+    // optional: show "Checking" while we test
+    setStatus("unknown")
+
+    ;(async () => {
+      const result = await checkAppStatus(url)
+      statusCache.set(url, result)
+      if (!cancelled) setStatus(result)
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [app.link])
+
+  const badge = statusBadgeVariant(status)
 
   const onActivate = () => {
     if (isEdit) onEdit?.(app)
@@ -66,9 +103,7 @@ export function AppCard({ app, onEdit }: AppCardProps) {
 
           <div className="min-w-0 flex-1 flex flex-col">
             <div className="flex items-start justify-between gap-2">
-              <CardTitle className="min-w-0 truncate text-base">
-                {app.title}
-              </CardTitle>
+              <CardTitle className="min-w-0 truncate text-base">{app.title}</CardTitle>
 
               <Badge
                 className={
@@ -93,3 +128,4 @@ export function AppCard({ app, onEdit }: AppCardProps) {
     </ClickableCard>
   )
 }
+

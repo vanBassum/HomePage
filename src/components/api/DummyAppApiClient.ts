@@ -1,5 +1,5 @@
-import type { AppApiClient, CreateAppLink, UpdateAppLink } from "@/components/api/AppApiClient"
-import type { AppLink } from "@/components/models/AppLink"
+import type { AppApiClient, CreateAppRecord, UpdateAppRecord } from "@/components/api/AppApiClient"
+import type { AppRecord } from "@/components/api/models/AppRecord"
 import { DUMMY_APPS } from "@/components/api/DummyData"
 
 function newId() {
@@ -7,33 +7,29 @@ function newId() {
 }
 
 export class DummyAppApiClient implements AppApiClient {
-  // in-memory store
-  private items: AppLink[] = [...DUMMY_APPS]
+  private items: AppRecord[] = [...DUMMY_APPS]
 
-  async getAll(): Promise<AppLink[]> {
+  async getAll(): Promise<AppRecord[]> {
     return [...this.items]
   }
 
-  async getById(id: string): Promise<AppLink | null> {
+  async getById(id: string): Promise<AppRecord | null> {
     return this.items.find((x) => x.id === id) ?? null
   }
 
-  async create(app: CreateAppLink): Promise<AppLink> {
-    const created: AppLink = { ...app, id: newId() }
+  async create(record: CreateAppRecord): Promise<AppRecord> {
+    const created: AppRecord = { ...record, id: newId() }
     this.items = [created, ...this.items]
     return created
   }
 
-  async update(app: UpdateAppLink): Promise<AppLink> {
-    const idx = this.items.findIndex((x) => x.id === app.id)
-    if (idx === -1) {
-      // Up to you: throw, or create. I prefer throw to surface bugs early.
-      throw new Error(`AppLink not found: ${app.id}`)
-    }
+  async update(record: UpdateAppRecord): Promise<AppRecord> {
+    const idx = this.items.findIndex((x) => x.id === record.id)
+    if (idx === -1) throw new Error(`Record not found: ${record.id}`)
     const next = [...this.items]
-    next[idx] = app
+    next[idx] = record
     this.items = next
-    return app
+    return record
   }
 
   async delete(id: string): Promise<void> {

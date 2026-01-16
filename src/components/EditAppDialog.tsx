@@ -36,7 +36,6 @@ export function EditAppDialog({ open, onOpenChange, value, onSave, onDelete }: E
       link: draft.link.trim(),
       iconUrl: draft.iconUrl?.trim() || undefined,
       category: draft.category?.trim() || undefined,
-      buttons: draft.buttons?.filter((b) => b.label.trim() || b.url.trim()),
     }
 
     onSave(cleaned)

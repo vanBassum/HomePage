@@ -1,26 +1,12 @@
-import type { AppLink } from "../models/AppLink"
+import type { AppRecord } from "@/components/api/models/AppRecord"
 
-/**
- * Contract for the API client.
- * This allows easy replacement with a real implementation later.
- */
+export type CreateAppRecord = Omit<AppRecord, "id">
+export type UpdateAppRecord = AppRecord
+
 export interface AppApiClient {
-  getAll(): Promise<AppLink[]>
+  getAll(): Promise<AppRecord[]>
+  getById(id: string): Promise<AppRecord | null>
+  create(record: CreateAppRecord): Promise<AppRecord>
+  update(record: UpdateAppRecord): Promise<AppRecord>
+  delete(id: string): Promise<void>
 }
-
-/**
- * Dummy API client.
- * Later this can be replaced by a fetch/OpenAPI-based implementation.
- */
-class DummyAppApiClient implements AppApiClient {
-  async getAll(): Promise<AppLink[]> {
-    // Simulate async behavior
-    return Promise.resolve(DUMMY_APPS)
-  }
-}
-
-/**
- * Export a singleton instance.
- * Swap this implementation later without touching consumers.
- */
-export const appApiClient: AppApiClient = new DummyAppApiClient()
