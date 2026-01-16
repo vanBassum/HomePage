@@ -79,7 +79,7 @@ export async function checkAppStatus(
   const timeout = setTimeout(() => controller.abort(), timeoutMs)
 
   try {
-    const res = await fetch(url, {
+    await fetch(url, {
       method,
       mode: "no-cors",
       signal: controller.signal,
