@@ -1,7 +1,6 @@
 export type AppRecord = {
-  id: string;
+  id: number;
   name: string;
-  title: string;
   description: string;
   link: string;
   iconUrl?: string;
