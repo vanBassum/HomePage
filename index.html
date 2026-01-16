@@ -1,45 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage</title>
-    <!-- Bootstrap CSS -->
-    <link id="bootstrap-theme" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Common CSS -->
-    <link rel="stylesheet" href="styles-common.css">
-    <!-- Theme-specific CSS -->
-    <link id="custom-theme" rel="stylesheet" href="styles-dark.css">
-</head>
-
-<body>
-    <div class="container">
-        <div class="row" id="cardContainer">
-            <!-- Wide card -->
-            <div class="col-12 wide-card-container">
-                <div class="wide-card">
-                    <div class="card-body d-flex align-items-center">
-                        <h3 class="card-title vertical-center">My apps</h3>
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="styleSwitch">
-                            <label class="custom-control-label" for="styleSwitch"></label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Cards will be dynamically added here -->
-        </div>
-    </div>
-
-    <!-- Bootstrap JS, Popper.js, and jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- Custom JavaScript -->
-    <script src="links.js"></script>
-    <script src="script.js"></script>
-
-</body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thermy</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

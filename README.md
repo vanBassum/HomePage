@@ -1,39 +1,139 @@
-# Readme - Simple Static Homepage
+Here’s a polished `README.md` that matches your project setup, conventions, and UI structure 👇
+# 🖋️ FontEditor
 
-This repository contains a simple static website that works without a server. You can easily download the files, customize the links and logos you want to display, and open the `index.html` file in your web browser to see the changes.
+👉 **Live Demo:** [https://vanbassum.github.io/FontEditor/](https://vanbassum.github.io/FontEditor/)
 
-See [https://vanbassum.github.io/HomePage](https://vanbassum.github.io/HomePage) for a live example hosted on GitHub Pages.
+FontEditor is a browser-based tool for creating and editing custom bitmap fonts used in embedded C applications.  
+It’s built with **React**, **TypeScript**, **Vite**, and **shadcn/ui**, and automatically deploys to **GitHub Pages** from the `main` branch.
 
-## Features
+---
 
-- Displays custom links with corresponding logos or favicons.
-- Automatically attempts to fetch the best possible favicon when the provided logo is not available.
-- Fully static and works without a server.
+## ✨ Features
 
-## Usage
+- 🧠 **Live bidirectional editing**  
+  Update C font code directly or modify glyphs visually — both stay in sync.
 
-1. **Download Files**: Clone or download the repository to your local machine.
+- 🎨 **Pixel-perfect glyph editor**  
+  Edit characters using a grid-based pixel interface (with optional grid overlay).
 
-2. **Customize Links and Logos**: 
-   - Open the `links.js` file.
-   - Add or remove links and corresponding logos according to your preferences.
+- 🔤 **Interactive character list**  
+  Add, delete, select, and drag characters to reorder them.
 
-3. **Open `index.html`**: Once you have customized the links and logos, simply open the `index.html` file in your preferred web browser.
+- 🧩 **Preview panel**  
+  Type text to see how it renders with your custom font.
 
-## Favicon Fallback Logic:
+- ⚡ **Real-time parsing and validation**  
+  The parser reads `FontDef` C structures, with error highlighting when syntax is invalid.
 
-If the main icon fails, fallback URLs are tried in order:
+- 🪶 **Responsive layout**  
+  The entire UI fits neatly on one screen — no window scroll, only internal card scrolling.
 
-1. **SimpleIcons CDN**:
-   `https://cdn.simpleicons.org/[service-name]`
+---
 
-2. **Root Favicon**:
-   `[protocol]://[host]/favicon.ico`
+## 🧱 Tech Stack
 
-If all fail, the icon is hidden to keep the UI clean.
+| Category | Technology |
+|-----------|-------------|
+| Framework | [React](https://react.dev/) + [Vite](https://vitejs.dev/) |
+| Language | TypeScript |
+| UI Library | [shadcn/ui](https://ui.shadcn.com/) + Tailwind CSS |
+| Deployment | GitHub Pages via GitHub Actions |
+| State Management | Local React state (hooks) |
+| Parsing | Custom C font lexer & serializer (`parseCFont` / `toCFont`) |
 
-## Additional Notes
+---
 
-- This static website is designed to be simple and easy to use.
-- You can customize the HTML, CSS, and JavaScript files further to suit your specific needs.
-- If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
+## 🧰 Project Structure
+
+```
+
+src/
+├─ components/
+│  ├─ FontCodeEditor.tsx        # C code editor with bidirectional sync
+│  ├─ FontCharacterList.tsx     # Scrollable, draggable list of characters
+│  ├─ FontCharacterEditor.tsx   # Pixel grid editor for selected character
+│  ├─ FontPreviewCard.tsx       # Live text preview
+│  ├─ FontDefDetails.tsx        # Displays FontDef parameters
+│  └─ FontCharacterIcon.tsx     # Renders single glyph at small scale
+│
+├─ lib/
+│  └─ fontParser.ts             # parseCFont() + toCFont() utilities
+│
+├─ types/
+│  └─ font.ts                   # FontDef and CharacterDef interfaces
+│
+├─ pages/
+│  └─ HomePage.tsx              # Main layout combining all components
+│
+└─ App.tsx                      # Root layout with sidebar & header
+
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1️⃣ Clone and install
+
+```bash
+git clone https://github.com/vanbassum/FontEditor.git
+cd FontEditor
+npm install
+````
+
+### 2️⃣ Run locally
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173)
+
+### 3️⃣ Build for production
+
+```bash
+npm run build
+npm run preview
+```
+
+---
+
+## 🔧 Deployment
+
+The project is deployed automatically via GitHub Actions.
+
+* Pushes to the `main` branch trigger a build.
+* The build output from `/dist` is published to the `gh-pages` branch.
+* Hosted at **[https://vanbassum.github.io/FontEditor/](https://vanbassum.github.io/FontEditor/)**.
+
+---
+
+## 🧩 Font Format
+
+The editor supports simple ASCII fonts defined in C as:
+
+```c
+#pragma once
+#include <stdint.h>
+#include "FontDef.h"
+
+static const uint8_t font5x7[96][5] = {
+    {0x00,0x00,0x00,0x00,0x00}, // ' '
+    {0x00,0x00,0x5F,0x00,0x00}, // '!'
+    ...
+};
+
+static const FontDef Font5x7 = {
+    .table = (const uint8_t*)font5x7,
+    .width = 5,
+    .height = 7,
+    .firstChar = 32,
+    .lastChar = 127,
+};
+```
+
+---
+
+## 📜 License
+
+MIT © 2025 [vanbassum](https://github.com/vanbassum)
