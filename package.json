@@ -1,0 +1,9 @@
+{
+    "name": "homepage",
+    "private": true,
+    "workspaces": [
+        "client",
+        "server",
+        "shared"
+    ]
+}

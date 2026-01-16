@@ -1,36 +1,31 @@
-# ---------- build client ----------
-    FROM node:22-alpine AS build-client
-    WORKDIR /client
-    COPY client/package*.json ./
-    RUN npm ci
-    COPY client/ .
-    RUN npm run build
-    
-    # ---------- build server ----------
-    FROM node:22-alpine AS build-server
-    WORKDIR /server
-    COPY server/package*.json ./
-    RUN npm ci
-    COPY server/ .
-    RUN npm run build
-    
-    # ---------- runtime ----------
-    FROM node:22-alpine AS runner
-    WORKDIR /app
-    ENV NODE_ENV=production
-    
-    # Server runtime deps
-    COPY server/package*.json ./
-    RUN npm ci --omit=dev
-    
-    # Copy built outputs
-    COPY --from=build-server /server/dist ./dist
-    COPY --from=build-client /client/dist ./client_dist
-    
-    # Runtime configuration (adjust as needed)
-    ENV PORT=8080
-    ENV CLIENT_DIST_DIR=/app/client_dist
-    
-    EXPOSE 8080
-    CMD ["node", "dist/server.js"]
-    
+FROM node:22-alpine AS deps
+WORKDIR /repo
+COPY package*.json ./
+COPY client/package*.json client/
+COPY server/package*.json server/
+COPY shared/package*.json shared/
+RUN npm ci
+
+FROM node:22-alpine AS build
+WORKDIR /repo
+COPY --from=deps /repo/node_modules ./node_modules
+COPY . .
+RUN npm run -w server build
+RUN npm run -w client build
+
+FROM node:22-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY package*.json ./
+COPY server/package*.json server/
+COPY shared/package*.json shared/
+RUN npm ci --omit=dev -w server
+
+COPY --from=build /repo/server/dist ./dist
+COPY --from=build /repo/client/dist ./client_dist
+
+ENV PORT=8080
+ENV CLIENT_DIST_DIR=/app/client_dist
+EXPOSE 8080
+CMD ["node", "dist/server.js"]
