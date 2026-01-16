@@ -1,18 +1,11 @@
-import type { AppLink } from "../models/AppLink"
-
-/**
- * Contract for the API client.
- * This allows easy replacement with a real implementation later.
- */
-export interface AppApiClient {
-  getAll(): Promise<AppLink[]>
-}
 
 /**
  * Dummy data – this will move to the real backend later.
  */
 
-const DUMMY_APPS: AppLink[] = [
+import type { AppLink } from "@/components/models/AppLink";
+
+export const DUMMY_APPS: AppLink[] = [
   {
     id: "minio",
     name: "MinIO",
@@ -86,20 +79,3 @@ const DUMMY_APPS: AppLink[] = [
     category: "Observability",
   },
 ]
-
-/**
- * Dummy API client.
- * Later this can be replaced by a fetch/OpenAPI-based implementation.
- */
-class DummyAppApiClient implements AppApiClient {
-  async getAll(): Promise<AppLink[]> {
-    // Simulate async behavior
-    return Promise.resolve(DUMMY_APPS)
-  }
-}
-
-/**
- * Export a singleton instance.
- * Swap this implementation later without touching consumers.
- */
-export const appApiClient: AppApiClient = new DummyAppApiClient()
