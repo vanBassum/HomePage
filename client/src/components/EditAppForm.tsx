@@ -55,7 +55,7 @@ export function EditAppForm({ app, onChange }: EditAppFormProps) {
             id="app-link"
             value={draft.link}
             onChange={(e) => update({ link: e.target.value })}
-            placeholder="https://..."
+            placeholder="https://example.com"
             inputMode="url"
           />
         </div>
@@ -66,7 +66,7 @@ export function EditAppForm({ app, onChange }: EditAppFormProps) {
             id="app-icon"
             value={draft.iconUrl ?? ""}
             onChange={(e) => update({ iconUrl: e.target.value })}
-            placeholder="https://... (optional)"
+            placeholder="https://cdn.simpleicons.org/example"
             inputMode="url"
           />
         </div>

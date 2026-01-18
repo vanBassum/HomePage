@@ -12,6 +12,9 @@ import { registerAppsRoutes } from "./routes/appsRoutes";
 async function main() {
   const fastify = Fastify({ logger: true });
 
+  // enable cors
+  fastify.register(cors);
+
   // Make sure static root is absolute (important in Docker too)
   const clientDistAbs = path.isAbsolute(CLIENT_DIST_DIR)
     ? CLIENT_DIST_DIR
