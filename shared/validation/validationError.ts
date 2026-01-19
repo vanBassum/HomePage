@@ -1,8 +1,7 @@
-// homepage-shared/src/validation/validationError.ts
-export type ValidationIssue = { path: string; message: string };
+import type { ValidationIssue } from "./types";
 
 export class ValidationError extends Error {
-  public readonly issues: ValidationIssue[];
+  readonly issues: ValidationIssue[];
 
   constructor(message: string, issues: ValidationIssue[]) {
     super(message);

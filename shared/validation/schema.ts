@@ -1,42 +1,42 @@
-// validation/schema.ts
-import { ValidationError, type ValidationIssue } from "./validationError";
+import type { Schema, ValidationIssue } from "./types";
+import { ValidationError } from "./validationError";
 
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && Object.getPrototypeOf(value) === Object.prototype;
-}
-
-export type Validator<T> = (value: unknown, path: string) => T;
-
-export function parseObjectCollecting<T extends Record<string, any>>(
-  body: unknown,
-  shape: { [K in keyof T]: Validator<T[K]> },
-  basePath = ""
-): T {
-  if (!isPlainObject(body)) {
-    throw new ValidationError("Invalid request body", [
-      { path: basePath, message: "body must be an object" },
-    ]);
-  }
-
-  const result: Partial<T> = {};
+export function validateObject<T extends Record<string, any>>(
+  schema: Schema<T>,
+  obj: T,
+  message = "Invalid request body"
+): void {
   const issues: ValidationIssue[] = [];
 
-  for (const key in shape) {
-    const path = basePath ? `${basePath}.${key}` : key;
-    try {
-      result[key] = shape[key]((body as Record<string, unknown>)[key], path);
-    } catch (e) {
-      if (e instanceof ValidationError) {
-        issues.push(...e.issues);
-      } else {
-        issues.push({ path, message: "is invalid" });
-      }
+  for (const key in schema) {
+    const validators = schema[key];
+    if (!validators || validators.length === 0) continue;
+
+    const value = obj[key];
+    for (const v of validators) {
+      const err = v(value);
+      if (err) issues.push({ path: key, message: err });
     }
   }
 
-  if (issues.length > 0) {
-    throw new ValidationError("Invalid request body", issues);
+  if (issues.length) {
+    throw new ValidationError(message, issues);
+  }
+}
+
+export function validateField<T extends Record<string, any>, K extends keyof T>(
+  schema: Schema<T>,
+  key: K,
+  value: unknown
+): ValidationIssue[] {
+  const validators = schema[key];
+  if (!validators || validators.length === 0) return [];
+
+  const issues: ValidationIssue[] = [];
+  for (const v of validators) {
+    const err = v(value);
+    if (err) issues.push({ path: String(key), message: err });
   }
 
-  return result as T;
+  return issues;
 }

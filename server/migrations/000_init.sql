@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 CREATE TABLE IF NOT EXISTS apps (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   name        TEXT NOT NULL,
-  description TEXT NOT NULL,
+  description TEXT NULL,
   link        TEXT NOT NULL,
   iconUrl     TEXT NULL,
   category    TEXT NULL,

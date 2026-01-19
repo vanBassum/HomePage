@@ -1,9 +1,38 @@
 // server/routes/appsRoutes.ts
 
 import type { FastifyInstance } from "fastify";
-import { parseAppRecord, isValidationError } from "homepage-shared";
+import { ValidationError, validateObject, appRecordSchema, type AppRecord } from "homepage-shared";
 import type { AppsRepo } from "../repos/appsRepo";
 import { badRequest, notFound, parseId } from "../httpErrors";
+
+/**
+ * Parse unknown request body into an AppRecord create/update payload.
+ * Transport concerns stay here; validation rules stay shared.
+ */
+function parseAppRecordBody(body: unknown): Omit<AppRecord, "id"> {
+  if (typeof body !== "object" || body === null || Array.isArray(body)) {
+    throw new ValidationError("Invalid request body", [
+      { path: "", message: "body must be an object" },
+    ]);
+  }
+
+  const o = body as Record<string, unknown>;
+
+  const trim = (v: unknown): string | undefined => {
+    if (typeof v !== "string") return undefined;
+    const s = v.trim();
+    return s === "" ? undefined : s;
+  };
+
+  // Required fields: keep empty string so validators can report “not blank”
+  return {
+    name: typeof o.name === "string" ? o.name : "",
+    link: typeof o.link === "string" ? o.link : "",
+    description: trim(o.description),
+    iconUrl: trim(o.iconUrl),
+    category: trim(o.category),
+  };
+}
 
 export async function registerAppsRoutes(
   fastify: FastifyInstance,
@@ -31,17 +60,19 @@ export async function registerAppsRoutes(
   });
 
   fastify.post("/api/apps", async (req, reply) => {
-    let app;
+    let input: Omit<AppRecord, "id">;
+
     try {
-      app = parseAppRecord(req.body);
+      input = parseAppRecordBody(req.body);
+      validateObject(appRecordSchema, input);
     } catch (err: unknown) {
-      if (isValidationError(err)) {
+      if (err instanceof ValidationError) {
         throw badRequest(err.message, { issues: err.issues });
       }
       throw err;
     }
 
-    const created = repo.create(app);
+    const created = repo.create(input);
     reply.code(201).send(created);
   });
 
@@ -49,11 +80,13 @@ export async function registerAppsRoutes(
     // @ts-expect-error Fastify param typing omitted for brevity
     const id = parseId(req.params?.id);
 
-    let input;
+    let input: Omit<AppRecord, "id">;
+
     try {
-      input = parseAppRecord(req.body);
+      input = parseAppRecordBody(req.body);
+      validateObject(appRecordSchema, input);
     } catch (err: unknown) {
-      if (isValidationError(err)) {
+      if (err instanceof ValidationError) {
         throw badRequest(err.message, { issues: err.issues });
       }
       throw err;
