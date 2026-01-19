@@ -2,34 +2,25 @@
 FROM node:22-bookworm-slim AS build
 WORKDIR /repo
 
-# Needed for native deps like better-sqlite3 (and some tooling)
 RUN apt-get update \
   && apt-get install -y --no-install-recommends python3 make g++ \
   && rm -rf /var/lib/apt/lists/*
 
-# Copy manifests first for caching
 COPY package.json package-lock.json ./
 COPY shared/package*.json shared/
 COPY client/package*.json client/
 COPY server/package*.json server/
 
-# Install all deps (including dev deps) for build.
-# NOTE: `npm ci` installs devDependencies by default; `--include=dev` is not supported on some npm versions.
-RUN npm ci
+RUN npm install -g npm@11.7.0
+RUN npm ci --include=optional
 
-# Copy source
 COPY . .
-
-# Build in the same order as your root contract: shared -> client -> server
 RUN npm run build
 
-# Copy client build into where the server will serve static assets from
 RUN mkdir -p server/dist/public \
   && cp -R client/dist/. server/dist/public/
 
-# Prune to production deps for runtime (keeps native addon binaries built for this image)
 RUN npm prune --omit=dev --workspaces
-
 
 # ---------- runtime ----------
 FROM node:22-bookworm-slim AS runner
