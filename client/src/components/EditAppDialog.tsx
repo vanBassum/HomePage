@@ -56,6 +56,7 @@ export function EditAppDialog({ open, onOpenChange, value, onSave, onDelete }: E
             <Button
               variant="destructive"
               onClick={() => {
+                if (value.id === undefined) return;
                 onDelete(value.id)
                 onOpenChange(false)
               }}

@@ -52,13 +52,14 @@ export function AppCard({ app, onEdit }: AppCardProps) {
   const isEdit = mode === "edit"
 
   const [status, setStatus] = React.useState<AppStatus>(() => {
+    if (app.id === undefined) return "unknown";
     return statusCache.get(app.id) ?? "unknown"
   })
 
   React.useEffect(() => {
     let cancelled = false
 
-    const cached = statusCache.get(app.id)
+    const cached = app.id === undefined ? undefined : statusCache.get(app.id)
     if (cached) {
       setStatus(cached)
       return
@@ -69,6 +70,7 @@ export function AppCard({ app, onEdit }: AppCardProps) {
     ;(async () => {
       try {
         const result = await getStatus(app)
+        if (app.id === undefined) return;
         statusCache.set(app.id, result)
         if (!cancelled) setStatus(result)
       } catch {
