@@ -1,46 +1,63 @@
-# ---------- build (deps + build in one stage) ----------
-    FROM node:22-bookworm-slim AS build
-    WORKDIR /repo
-    
-    ENV NODE_ENV=development
-    
-    # Copy manifests first for cache
-    COPY package.json package-lock.json ./
-    COPY client/package*.json client/
-    COPY server/package*.json server/
-    COPY shared/package*.json shared/
-    
-    # Install all deps INCLUDING dev (needed for tsc/vite)
-    RUN npm ci --include=dev
-    
-    # Workaround: ensure Rollup native binary exists on Linux x64 (npm optional deps bug)
-    RUN npm -w client i --no-save @rollup/rollup-linux-x64-gnu
-    
-    # Copy full source
-    COPY . .
-    
-    # Build server + client
-    RUN npm -w server run build
-    RUN npm -w client run build
-    
-    
-    # ---------- runtime ----------
-    FROM node:22-bookworm-slim AS runner
-    WORKDIR /app
-    
-    ENV NODE_ENV=production
-    ENV PORT=8080
-    ENV CLIENT_DIST_DIR=/app/client_dist
-    
-    COPY package.json package-lock.json ./
-    COPY server/package*.json server/
-    COPY shared/package*.json shared/
-    
-    RUN npm ci --omit=dev -w server
-    
-    COPY --from=build /repo/server/dist ./dist
-    COPY --from=build /repo/client/dist ./client_dist
-    
-    EXPOSE 8080
-    CMD ["node", "dist/server.js"]
-    
+# ---------- build (install + compile) ----------
+FROM node:22-bookworm-slim AS build
+WORKDIR /repo
+
+# Needed for native deps like better-sqlite3 (and some tooling)
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends python3 make g++ \
+  && rm -rf /var/lib/apt/lists/*
+
+# Copy manifests first for caching
+COPY package.json package-lock.json ./
+COPY shared/package*.json shared/
+COPY client/package*.json client/
+COPY server/package*.json server/
+
+# Install all deps incl. dev (tsc/vite needed for build)
+RUN npm ci --include=dev
+
+# Copy source
+COPY . .
+
+# Build in the same order as your root contract: shared -> client -> server
+# (Your root script already encodes this order.)
+RUN npm run build
+
+# Copy client build into where the server will serve static assets from
+# (Matches your intended runtime layout.)
+RUN mkdir -p server/dist/public \
+  && cp -R client/dist/. server/dist/public/
+
+# Prune to production deps for runtime (keeps native addon binaries built for this image)
+RUN npm prune --omit=dev --workspaces
+
+
+# ---------- runtime ----------
+FROM node:22-bookworm-slim AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=8080
+
+# Your persistent storage mount point
+ENV DATA_DIR=/data
+
+# Create data dir and run as non-root
+RUN mkdir -p /data && chown -R node:node /data
+
+# Copy only what is needed at runtime:
+# - pruned node_modules
+# - server build output (which now includes dist/public)
+# - relevant package metadata (useful for some runtime tooling)
+COPY --from=build /repo/package.json /repo/package-lock.json ./
+COPY --from=build /repo/node_modules ./node_modules
+COPY --from=build /repo/server/dist ./server/dist
+COPY --from=build /repo/server/package*.json ./server/
+COPY --from=build /repo/shared/package*.json ./shared/
+
+USER node
+
+VOLUME ["/data"]
+EXPOSE 8080
+
+CMD ["node", "server/dist/server.js"]
