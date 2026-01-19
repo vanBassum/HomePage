@@ -13,18 +13,17 @@ COPY shared/package*.json shared/
 COPY client/package*.json client/
 COPY server/package*.json server/
 
-# Upgrade npm for better workspace/optional-dep handling
+# Use a newer npm
 RUN npm install -g npm@11.7.0
 
-# Ensure optional deps are not omitted (some CI environments may set omit=optional)
+# Ensure optional deps are not omitted (Rollup native packages are optional deps)
 ENV NPM_CONFIG_INCLUDE=optional
 ENV NPM_CONFIG_OMIT=
 
-# Critical: disable Rollup native binary loading (fixes @rollup/rollup-linux-x64-gnu missing)
-ENV ROLLUP_DISABLE_NATIVE=1
-
-# Install dependencies for all workspaces (incl dev deps, needed for tsc/vite)
-RUN npm ci --workspaces
+# IMPORTANT:
+# Use `npm install` instead of `npm ci` to allow npm to resolve/install
+# platform-specific optional deps correctly inside the Linux builder.
+RUN npm install --workspaces --include-workspace-root --no-audit --no-fund
 
 # Copy the rest of the repo and build
 COPY . .
