@@ -13,18 +13,17 @@ COPY shared/package*.json shared/
 COPY client/package*.json client/
 COPY server/package*.json server/
 
-# Install all deps incl. dev (tsc/vite needed for build)
-RUN npm ci --include=dev
+# Install all deps (including dev deps) for build.
+# NOTE: `npm ci` installs devDependencies by default; `--include=dev` is not supported on some npm versions.
+RUN npm ci
 
 # Copy source
 COPY . .
 
 # Build in the same order as your root contract: shared -> client -> server
-# (Your root script already encodes this order.)
 RUN npm run build
 
 # Copy client build into where the server will serve static assets from
-# (Matches your intended runtime layout.)
 RUN mkdir -p server/dist/public \
   && cp -R client/dist/. server/dist/public/
 
@@ -38,17 +37,12 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=8080
-
-# Your persistent storage mount point
 ENV DATA_DIR=/data
 
 # Create data dir and run as non-root
 RUN mkdir -p /data && chown -R node:node /data
 
-# Copy only what is needed at runtime:
-# - pruned node_modules
-# - server build output (which now includes dist/public)
-# - relevant package metadata (useful for some runtime tooling)
+# Copy only what is needed at runtime
 COPY --from=build /repo/package.json /repo/package-lock.json ./
 COPY --from=build /repo/node_modules ./node_modules
 COPY --from=build /repo/server/dist ./server/dist
