@@ -1,21 +1,14 @@
 {
-    "compilerOptions": {
-      "target": "ES2022",
-      "module": "ESNext",
-      "moduleResolution": "Bundler",
-  
-      "strict": true,
-      "esModuleInterop": true,
-      "skipLibCheck": true,
-  
-      "types": ["node"],
-  
-      "baseUrl": ".",
-      "paths": {
-      },
-  
-      "outDir": "dist"
-    },
-    "include": ["src/**/*.ts", "../shared/**/*.ts"]
-  }
-  
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
+}

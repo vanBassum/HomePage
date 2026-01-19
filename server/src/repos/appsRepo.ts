@@ -1,7 +1,6 @@
 import type Database from "better-sqlite3";
-import type { AppRecord } from "homepage-shared";
+import { type AppRecord } from "homepage-shared";
 
-export type CreateAppInput = Omit<AppRecord, "id">;
 
 export class AppsRepo {
   public constructor(private readonly db: Database.Database) {}
@@ -30,7 +29,7 @@ export class AppsRepo {
     return row as AppRecord | undefined;
   }
 
-  public create(input: CreateAppInput): AppRecord {
+  public create(input: AppRecord): AppRecord {
     const stmt = this.db.prepare(
       `INSERT INTO apps (name, description, link, iconUrl, category)
        VALUES (@name, @description, @link, @iconUrl, @category)`
@@ -50,7 +49,7 @@ export class AppsRepo {
     return created;
   }
 
-  public update(id: number, input: CreateAppInput): boolean {
+  public update(id: number, input: AppRecord): boolean {
     const stmt = this.db.prepare(
       `UPDATE apps
        SET name=@name, description=@description, link=@link, iconUrl=@iconUrl, category=@category

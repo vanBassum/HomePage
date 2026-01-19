@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -6,8 +6,10 @@ import { AppCard } from "@/components/AppCard"
 import { NewAppCard } from "@/components/NewAppCard"
 import { useMode } from "@/components/mode/mode-provider"
 import { EditAppDialog } from "@/components/EditAppDialog"
-import { useApps } from "@/apps/useApps"
-import type { AppRecord } from "homepage-shared"
+import { ValidationError, type AppRecord, type ValidationIssue } from "homepage-shared"
+import { toast } from "sonner"
+import { useApi } from "@/api/useApi"
+import type { CreateAppRequest } from "@/api/AppsApi"
 
 type HeaderBarProps = {
   query: string
@@ -41,13 +43,35 @@ function HeaderBar({ query, setQuery }: HeaderBarProps) {
   )
 }
 
+function IssuesToast({ issues }: { issues: ValidationIssue[] }) {
+  return (
+    <div className="space-y-1">
+      <div className="text-sm">Please fix the following:</div>
+      <ul className="list-disc pl-5 text-sm">
+        {issues.slice(0, 6).map((i, idx) => (
+          <li key={idx}>
+            <span className="font-medium">{i.path || "(body)"}:</span> {i.message}
+          </li>
+        ))}
+        {issues.length > 6 && <li>…plus {issues.length - 6} more</li>}
+      </ul>
+    </div>
+  )
+}
+
+function toErrorMessage(e: unknown, fallback: string) {
+  if (e instanceof Error) return e.message || fallback
+  const s = String(e)
+  return s && s !== "[object Object]" ? s : fallback
+}
 
 export function MyAppsPage() {
+  const api = useApi()
   const { mode } = useMode()
-  const { items: apps, loading, create, update, remove } = useApps()
 
+  const [apps, setApps] = useState<AppRecord[]>([])
+  const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState("")
-
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editing, setEditing] = useState<AppRecord | null>(null)
 
@@ -62,6 +86,37 @@ export function MyAppsPage() {
       )
     })
   }, [apps, query])
+
+  const showExceptionAsToast = useCallback((e: unknown, fallback: string) => {
+    if (e instanceof ValidationError) {
+      toast.error("Invalid input", {
+        description: <IssuesToast issues={e.issues} />,
+      })
+      return
+    }
+
+    toast.error(toErrorMessage(e, fallback))
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+
+    ;(async () => {
+      setLoading(true)
+      try {
+        const data = await api.apps.getAll()
+        if (!cancelled) setApps(data)
+      } catch (e) {
+        if (!cancelled) showExceptionAsToast(e, "Failed to load apps")
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [api, showExceptionAsToast])
 
   const handleEdit = (app: AppRecord) => {
     setEditing(app)
@@ -81,19 +136,49 @@ export function MyAppsPage() {
     setDialogOpen(true)
   }
 
-  const handleSave = async (next: AppRecord) => {
-    if (!next.id) {
-      // create expects Omit<AppRecord,"id"> (CreateAppRecord)
-      const { id: _id, ...payload } = next
-      await create(payload)
-    } else {
-      await update(next)
-    }
-  }
+  const handleSave = useCallback(
+    async (next: AppRecord) => {
+      try {
+        if (!next.id) {
+          const { id: _id, ...payload } = next
+          const created = await api.apps.create(payload as CreateAppRequest)
+          setApps((prev) => [created, ...prev])
+          toast.success("App created")
+        } else {
+          const { id, ...payload } = next
+          await api.apps.update(id, payload)
+          setApps((prev) => prev.map((x) => (x.id === id ? next : x)))
+          toast.success("App saved")
+        }
 
-  const handleDelete = async (id: number) => {
-    await remove(id);
-  };
+        setDialogOpen(false)
+        setEditing(null)
+      } catch (e) {
+        showExceptionAsToast(e, "Failed to save app")
+        throw e
+      }
+    },
+    [api, showExceptionAsToast]
+  )
+
+  const handleDelete = useCallback(
+    async (id: number) => {
+      try {
+        await api.apps.delete(id)
+        setApps((prev) => prev.filter((x) => x.id !== id))
+        toast.success("App deleted")
+
+        if (editing?.id === id) {
+          setDialogOpen(false)
+          setEditing(null)
+        }
+      } catch (e) {
+        showExceptionAsToast(e, "Failed to delete app")
+        throw e
+      }
+    },
+    [api, editing?.id, showExceptionAsToast]
+  )
 
   return (
     <div className="flex h-full flex-col">

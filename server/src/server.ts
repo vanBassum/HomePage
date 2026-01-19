@@ -12,8 +12,43 @@ import { registerAppsRoutes } from "./routes/appsRoutes";
 async function main() {
   const fastify = Fastify({ logger: true });
 
+  fastify.setErrorHandler((err: any, req, reply) => {
+    const statusCode =
+      typeof err?.statusCode === "number" ? err.statusCode : 500;
+
+    // Base payload
+    const payload: any = {
+      statusCode,
+      error:
+        statusCode >= 500
+          ? "Internal Server Error"
+          : statusCode === 404
+            ? "Not Found"
+            : "Bad Request",
+      message: err?.message ?? "Unexpected error",
+    };
+
+    // Normalize validation issues to a single place: top-level `issues`
+    const detailsIssues = err?.details?.issues;
+    if (Array.isArray(detailsIssues)) {
+      payload.issues = detailsIssues;
+    } else if (Array.isArray(err?.issues)) {
+      payload.issues = err.issues;
+    }
+
+    // Option A (recommended): do NOT expose `details` at all
+    // (If you still want extra metadata later, add it explicitly, not as a wrapper.)
+    // payload.details = err.details; // <-- remove / do not include
+
+    if (statusCode >= 500) req.log.error(err);
+
+    reply.code(statusCode).send(payload);
+  });
+
+
+
   // enable cors
-  fastify.register(cors);
+  await fastify.register(cors, { origin: true });
 
   // Make sure static root is absolute (important in Docker too)
   const clientDistAbs = path.isAbsolute(CLIENT_DIST_DIR)
@@ -21,14 +56,6 @@ async function main() {
     : path.resolve(process.cwd(), CLIENT_DIST_DIR);
 
   const hasClientBuild = existsSync(clientDistAbs);
-
-  // CORS: only needed when the client is served from another origin (dev Vite).
-  if (!hasClientBuild) {
-    await fastify.register(cors, {
-      origin: "http://localhost:5173",
-      methods: ["GET", "POST", "PUT", "DELETE"],
-    });
-  }
 
   await ensureDir(DATA_DIR);
 
