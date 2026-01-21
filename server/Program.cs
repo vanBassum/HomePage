@@ -4,6 +4,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
+// Add MVC controllers
+builder.Services.AddControllers();
+
 // DEV ONLY: allow all CORS (any origin/headers/methods)
 if (builder.Environment.IsDevelopment())
 {
@@ -33,6 +36,9 @@ app.MapGet("/api/version", () => versionInfo)
    .WithName("GetVersion")
    .WithTags("Version");
 
+// Map controllers (this is the key line)
+app.MapControllers();
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
@@ -49,5 +55,3 @@ app.MapFallback(async context =>
 });
 
 app.Run();
-
-public record VersionInfo(string Name, string Version);

@@ -14,6 +14,12 @@
 
 
 
-export * from './apis/apps-api';
-export * from './apis/version-api';
+export interface AppRecord {
+    'id': number;
+    'name': string;
+    'description': string | null;
+    'url': string | null;
+    'iconUrl': string | null;
+    'category': string | null;
+}
 

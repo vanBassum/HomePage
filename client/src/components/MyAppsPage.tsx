@@ -7,8 +7,7 @@ import { NewAppCard } from "@/components/NewAppCard"
 import { useMode } from "@/components/mode/mode-provider"
 import { EditAppDialog } from "@/components/EditAppDialog"
 import { toast } from "sonner"
-import { useApi } from "@/api/useApi"
-import type { CreateAppRequest } from "@/api/AppsApi"
+import { api, type AppRecord } from "@/api"
 
 type HeaderBarProps = {
   query: string
@@ -42,30 +41,7 @@ function HeaderBar({ query, setQuery }: HeaderBarProps) {
   )
 }
 
-function IssuesToast({ issues }: { issues: ValidationIssue[] }) {
-  return (
-    <div className="space-y-1">
-      <div className="text-sm">Please fix the following:</div>
-      <ul className="list-disc pl-5 text-sm">
-        {issues.slice(0, 6).map((i, idx) => (
-          <li key={idx}>
-            <span className="font-medium">{i.path || "(body)"}:</span> {i.message}
-          </li>
-        ))}
-        {issues.length > 6 && <li>…plus {issues.length - 6} more</li>}
-      </ul>
-    </div>
-  )
-}
-
-function toErrorMessage(e: unknown, fallback: string) {
-  if (e instanceof Error) return e.message || fallback
-  const s = String(e)
-  return s && s !== "[object Object]" ? s : fallback
-}
-
 export function MyAppsPage() {
-  const api = useApi()
   const { mode } = useMode()
 
   const [apps, setApps] = useState<AppRecord[]>([])
@@ -81,21 +57,10 @@ export function MyAppsPage() {
         !q ||
         a.name.toLowerCase().includes(q) ||
         (a.description ?? "").toLowerCase().includes(q) ||
-        a.link.toLowerCase().includes(q)
+        (a.url ?? "").toLowerCase().includes(q)
       )
     })
   }, [apps, query])
-
-  const showExceptionAsToast = useCallback((e: unknown, fallback: string) => {
-    if (e instanceof ValidationError) {
-      toast.error("Invalid input", {
-        description: <IssuesToast issues={e.issues} />,
-      })
-      return
-    }
-
-    toast.error(toErrorMessage(e, fallback))
-  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -103,10 +68,10 @@ export function MyAppsPage() {
     ;(async () => {
       setLoading(true)
       try {
-        const data = await api.apps.getAll()
-        if (!cancelled) setApps(data)
-      } catch (e) {
-        if (!cancelled) showExceptionAsToast(e, "Failed to load apps")
+        const res = await api.apps.apiAppsGet()
+        if (!cancelled) setApps(res.data)
+      } catch {
+        if (!cancelled) toast.error("Failed to load applications")
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -115,7 +80,7 @@ export function MyAppsPage() {
     return () => {
       cancelled = true
     }
-  }, [api, showExceptionAsToast])
+  }, [])
 
   const handleEdit = (app: AppRecord) => {
     setEditing(app)
@@ -125,11 +90,11 @@ export function MyAppsPage() {
   const handleCreate = () => {
     const blank: AppRecord = {
       id: 0,
-      name: "",
-      description: "",
-      link: "",
-      iconUrl: undefined,
-      category: "",
+      name: "New app",
+      description: null,
+      url: null,
+      iconUrl: null,
+      category: null,
     }
     setEditing(blank)
     setDialogOpen(true)
@@ -140,12 +105,17 @@ export function MyAppsPage() {
       try {
         if (!next.id) {
           const { id: _id, ...payload } = next
-          const created = await api.apps.create(payload as CreateAppRequest)
-          setApps((prev) => [created, ...prev])
+          const created = await api.apps.apiAppsPost(payload as any)
+          setApps((prev) => [created.data, ...prev])
           toast.success("App created")
         } else {
           const { id, ...payload } = next
-          await api.apps.update(id, payload)
+
+          // Most TS OpenAPI generators name PUT /api/apps/{id} as apiAppsIdPut
+          // (rather than apiAppsPut). This matches the earlier error pattern.
+          await api.apps.apiAppsIdPut(id, payload as any)
+
+          // Prefer server echo if available; otherwise, keep local `next`
           setApps((prev) => prev.map((x) => (x.id === id ? next : x)))
           toast.success("App saved")
         }
@@ -153,17 +123,17 @@ export function MyAppsPage() {
         setDialogOpen(false)
         setEditing(null)
       } catch (e) {
-        showExceptionAsToast(e, "Failed to save app")
+        toast.error("Failed to save app")
         throw e
       }
     },
-    [api, showExceptionAsToast]
+    []
   )
 
   const handleDelete = useCallback(
     async (id: number) => {
       try {
-        await api.apps.delete(id)
+        await api.apps.apiAppsIdDelete(id)
         setApps((prev) => prev.filter((x) => x.id !== id))
         toast.success("App deleted")
 
@@ -172,11 +142,11 @@ export function MyAppsPage() {
           setEditing(null)
         }
       } catch (e) {
-        showExceptionAsToast(e, "Failed to delete app")
+        toast.error("Failed to delete app")
         throw e
       }
     },
-    [api, editing?.id, showExceptionAsToast]
+    [editing?.id]
   )
 
   return (
