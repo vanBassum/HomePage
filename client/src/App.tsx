@@ -8,11 +8,9 @@ function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <ModeProvider defaultMode="view" storageKey="app-mode">
-        test
         <Shell>
           <MyAppsPage />
         </Shell>
-
         <Toaster richColors />
       </ModeProvider>
     </ThemeProvider>

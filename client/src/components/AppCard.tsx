@@ -5,7 +5,7 @@ import { checkAppStatus, openUrl, type AppStatus } from "@/lib/utils"
 import { useMode } from "@/components/mode/mode-provider"
 import { ClickableCard } from "@/components/ClickableCard"
 import React from "react"
-import type { AppRecord } from "homepage-shared"
+import type { AppRecord } from "@/api"
 
 function statusBadgeVariant(status: AppStatus) {
   switch (status) {
@@ -27,7 +27,7 @@ function AppLogo({ app }: { app: AppRecord }) {
       onError={(ev) => {
         const img = ev.currentTarget
         try {
-          const u = new URL(app.link)
+          const u = new URL(app.url ?? "")
           img.src = `${u.protocol}//${u.host}/favicon.ico`
         } catch {
         }
@@ -42,7 +42,7 @@ type AppCardProps = {
 }
 
 async function getStatus(app: AppRecord): Promise<AppStatus> {
-  return checkAppStatus(app.link);
+  return checkAppStatus(app.url ?? "");
 }
 
 const statusCache = new Map<number, AppStatus>()
@@ -87,7 +87,7 @@ export function AppCard({ app, onEdit }: AppCardProps) {
 
   const onActivate = () => {
     if (isEdit) onEdit?.(app)
-    else openUrl(app.link)
+    else openUrl(app.url ?? "")
   }
 
   return (

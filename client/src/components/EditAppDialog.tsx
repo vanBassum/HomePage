@@ -2,7 +2,7 @@ import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { EditAppForm } from "@/components/EditAppForm"
-import type { AppRecord } from "homepage-shared"
+import type { AppRecord } from "@/api"
 
 type EditAppDialogProps = {
   open: boolean
@@ -27,15 +27,15 @@ export function EditAppDialog({ open, onOpenChange, value, onSave, onDelete }: E
   const commit = () => {
     // Minimal validation; expand as needed
     if (!draft.name.trim()) return
-    if (!draft.link.trim()) return
+    if (!draft.url?.trim()) return
 
     const cleaned: AppRecord = {
       ...draft,
       name: draft.name.trim(),
       description: draft.description?.trim() ?? "",
-      link: draft.link.trim(),
-      iconUrl: draft.iconUrl?.trim() || undefined,
-      category: draft.category?.trim() || undefined,
+      url: draft.url.trim(),
+      iconUrl: draft.iconUrl?.trim() ?? null,
+      category: draft.category?.trim() ?? null,
     }
 
     onSave(cleaned)
