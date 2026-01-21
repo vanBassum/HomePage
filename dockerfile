@@ -6,12 +6,12 @@ WORKDIR /app/client
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 RUN npm run build
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS server-build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS server-build
 WORKDIR /src
 COPY . .
 RUN dotnet publish ./server/Server.csproj -c Release -o /out
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=server-build /out/ ./
 COPY --from=client-build /app/client/dist/ ./wwwroot/
