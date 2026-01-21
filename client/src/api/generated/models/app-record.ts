@@ -25,36 +25,36 @@ export interface AppRecord {
      * @type {number}
      * @memberof AppRecord
      */
-    'id': number;
+    'id'?: number;
     /**
      * 
      * @type {string}
      * @memberof AppRecord
      */
-    'name': string;
+    'name'?: string;
     /**
      * 
      * @type {string}
      * @memberof AppRecord
      */
-    'description': string | null;
+    'description'?: string | null;
     /**
      * 
      * @type {string}
      * @memberof AppRecord
      */
-    'url': string | null;
+    'url'?: string | null;
     /**
      * 
      * @type {string}
      * @memberof AppRecord
      */
-    'iconUrl': string | null;
+    'iconUrl'?: string | null;
     /**
      * 
      * @type {string}
      * @memberof AppRecord
      */
-    'category': string | null;
+    'category'?: string | null;
 }
 

@@ -55,7 +55,7 @@ export function MyAppsPage() {
     return apps.filter((a) => {
       return (
         !q ||
-        a.name.toLowerCase().includes(q) ||
+        a.name?.toLowerCase().includes(q) ||
         (a.description ?? "").toLowerCase().includes(q) ||
         (a.url ?? "").toLowerCase().includes(q)
       )
@@ -68,7 +68,7 @@ export function MyAppsPage() {
     ;(async () => {
       setLoading(true)
       try {
-        const res = await api.apps.apiAppsGet()
+        const res = await api.apps.getAll()
         if (!cancelled) setApps(res.data)
       } catch {
         if (!cancelled) toast.error("Failed to load applications")
@@ -105,7 +105,7 @@ export function MyAppsPage() {
       try {
         if (!next.id) {
           const { id: _id, ...payload } = next
-          const created = await api.apps.apiAppsPost(payload as any)
+          const created = await api.apps.create(payload as any)
           setApps((prev) => [created.data, ...prev])
           toast.success("App created")
         } else {
@@ -113,7 +113,7 @@ export function MyAppsPage() {
 
           // Most TS OpenAPI generators name PUT /api/apps/{id} as apiAppsIdPut
           // (rather than apiAppsPut). This matches the earlier error pattern.
-          await api.apps.apiAppsIdPut(id, payload as any)
+          await api.apps.replace(id, payload as any)
 
           // Prefer server echo if available; otherwise, keep local `next`
           setApps((prev) => prev.map((x) => (x.id === id ? next : x)))
@@ -133,7 +133,7 @@ export function MyAppsPage() {
   const handleDelete = useCallback(
     async (id: number) => {
       try {
-        await api.apps.apiAppsIdDelete(id)
+        await api.apps.remove(id)
         setApps((prev) => prev.filter((x) => x.id !== id))
         toast.success("App deleted")
 

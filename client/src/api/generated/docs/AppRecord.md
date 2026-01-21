@@ -5,12 +5,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **number** |  | [default to undefined]
-**name** | **string** |  | [default to undefined]
-**description** | **string** |  | [default to undefined]
-**url** | **string** |  | [default to undefined]
-**iconUrl** | **string** |  | [default to undefined]
-**category** | **string** |  | [default to undefined]
+**id** | **number** |  | [optional] [default to undefined]
+**name** | **string** |  | [optional] [default to undefined]
+**description** | **string** |  | [optional] [default to undefined]
+**url** | **string** |  | [optional] [default to undefined]
+**iconUrl** | **string** |  | [optional] [default to undefined]
+**category** | **string** |  | [optional] [default to undefined]
 
 ## Example
 

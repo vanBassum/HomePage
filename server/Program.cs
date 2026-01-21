@@ -1,11 +1,27 @@
+using Microsoft.EntityFrameworkCore;
+using Server.Data;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
-
-// Add MVC controllers
 builder.Services.AddControllers();
+
+// Read database path from config, defaulting to /data/db.sqlite
+var dbPath = builder.Configuration["Storage:DatabasePath"];
+if (string.IsNullOrWhiteSpace(dbPath))
+    dbPath = "/data/db.sqlite";
+
+// Ensure directory exists (important for /data in containers)
+var dbDir = Path.GetDirectoryName(dbPath);
+if (!string.IsNullOrWhiteSpace(dbDir))
+    Directory.CreateDirectory(dbDir);
+
+// Register EF Core with SQLite
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlite($"Data Source={dbPath}");
+});
 
 // DEV ONLY: allow all CORS (any origin/headers/methods)
 if (builder.Environment.IsDevelopment())
@@ -27,14 +43,11 @@ if (app.Environment.IsDevelopment())
     app.UseCors();        // apply default CORS policy
 }
 
-var versionInfo = new VersionInfo(
-    Name: "HomePage",
-    Version: Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0"
-);
-
-app.MapGet("/api/version", () => versionInfo)
-   .WithName("GetVersion")
-   .WithTags("Version");
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 // Map controllers (this is the key line)
 app.MapControllers();

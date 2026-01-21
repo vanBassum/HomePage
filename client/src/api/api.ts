@@ -1,5 +1,4 @@
 import { AppsApi, Configuration } from "./generated";
-import { VersionApi } from "./generated";
 
 // --------------------
 // Configuration
@@ -14,7 +13,6 @@ const config = new Configuration({
 // API singletons
 // --------------------
 export const api = {
-  version: new VersionApi(config),
   apps: new AppsApi(config),
 };
 
@@ -23,5 +21,4 @@ export const api = {
 // --------------------
 export type {
   AppRecord,
-  VersionInfo,
 } from "./generated/models";

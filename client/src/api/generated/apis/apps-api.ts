@@ -31,10 +31,45 @@ export const AppsApiAxiosParamCreator = function (configuration?: Configuration)
     return {
         /**
          * 
+         * @param {AppRecord} appRecord 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAppsGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        create: async (appRecord: AppRecord, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'appRecord' is not null or undefined
+            assertParamExists('create', 'appRecord', appRecord)
+            const localVarPath = `/api/Apps`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(appRecord, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAll: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/Apps`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -64,9 +99,42 @@ export const AppsApiAxiosParamCreator = function (configuration?: Configuration)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAppsIdDelete: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getById: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('apiAppsIdDelete', 'id', id)
+            assertParamExists('getById', 'id', id)
+            const localVarPath = `/api/Apps/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        remove: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('remove', 'id', id)
             const localVarPath = `/api/Apps/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -94,87 +162,15 @@ export const AppsApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * 
          * @param {number} id 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiAppsIdGet: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('apiAppsIdGet', 'id', id)
-            const localVarPath = `/api/Apps/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {number} id 
          * @param {AppRecord} appRecord 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAppsIdPatch: async (id: number, appRecord: AppRecord, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        replace: async (id: number, appRecord: AppRecord, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('apiAppsIdPatch', 'id', id)
+            assertParamExists('replace', 'id', id)
             // verify required parameter 'appRecord' is not null or undefined
-            assertParamExists('apiAppsIdPatch', 'appRecord', appRecord)
-            const localVarPath = `/api/Apps/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(appRecord, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {number} id 
-         * @param {AppRecord} appRecord 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiAppsIdPut: async (id: number, appRecord: AppRecord, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('apiAppsIdPut', 'id', id)
-            // verify required parameter 'appRecord' is not null or undefined
-            assertParamExists('apiAppsIdPut', 'appRecord', appRecord)
+            assertParamExists('replace', 'appRecord', appRecord)
             const localVarPath = `/api/Apps/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -185,41 +181,6 @@ export const AppsApiAxiosParamCreator = function (configuration?: Configuration)
             }
 
             const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(appRecord, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {AppRecord} appRecord 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiAppsPost: async (appRecord: AppRecord, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'appRecord' is not null or undefined
-            assertParamExists('apiAppsPost', 'appRecord', appRecord)
-            const localVarPath = `/api/Apps`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -249,13 +210,25 @@ export const AppsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {AppRecord} appRecord 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiAppsGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AppRecord>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAppsGet(options);
+        async create(appRecord: AppRecord, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AppRecord>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.create(appRecord, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AppsApi.apiAppsGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AppsApi.create']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAll(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AppRecord>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAll(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AppsApi.getAll']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -264,10 +237,10 @@ export const AppsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiAppsIdDelete(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAppsIdDelete(id, options);
+        async getById(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AppRecord>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getById(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AppsApi.apiAppsIdDelete']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AppsApi.getById']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -276,10 +249,10 @@ export const AppsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiAppsIdGet(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AppRecord>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAppsIdGet(id, options);
+        async remove(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.remove(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AppsApi.apiAppsIdGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AppsApi.remove']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -289,35 +262,10 @@ export const AppsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiAppsIdPatch(id: number, appRecord: AppRecord, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AppRecord>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAppsIdPatch(id, appRecord, options);
+        async replace(id: number, appRecord: AppRecord, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AppRecord>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.replace(id, appRecord, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AppsApi.apiAppsIdPatch']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {number} id 
-         * @param {AppRecord} appRecord 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async apiAppsIdPut(id: number, appRecord: AppRecord, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AppRecord>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAppsIdPut(id, appRecord, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AppsApi.apiAppsIdPut']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {AppRecord} appRecord 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async apiAppsPost(appRecord: AppRecord, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AppRecord>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAppsPost(appRecord, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AppsApi.apiAppsPost']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AppsApi.replace']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -332,11 +280,20 @@ export const AppsApiFactory = function (configuration?: Configuration, basePath?
     return {
         /**
          * 
+         * @param {AppRecord} appRecord 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAppsGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<AppRecord>> {
-            return localVarFp.apiAppsGet(options).then((request) => request(axios, basePath));
+        create(appRecord: AppRecord, options?: RawAxiosRequestConfig): AxiosPromise<AppRecord> {
+            return localVarFp.create(appRecord, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAll(options?: RawAxiosRequestConfig): AxiosPromise<Array<AppRecord>> {
+            return localVarFp.getAll(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -344,8 +301,8 @@ export const AppsApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAppsIdDelete(id: number, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.apiAppsIdDelete(id, options).then((request) => request(axios, basePath));
+        getById(id: number, options?: RawAxiosRequestConfig): AxiosPromise<AppRecord> {
+            return localVarFp.getById(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -353,8 +310,8 @@ export const AppsApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAppsIdGet(id: number, options?: RawAxiosRequestConfig): AxiosPromise<AppRecord> {
-            return localVarFp.apiAppsIdGet(id, options).then((request) => request(axios, basePath));
+        remove(id: number, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.remove(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -363,27 +320,8 @@ export const AppsApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAppsIdPatch(id: number, appRecord: AppRecord, options?: RawAxiosRequestConfig): AxiosPromise<AppRecord> {
-            return localVarFp.apiAppsIdPatch(id, appRecord, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {number} id 
-         * @param {AppRecord} appRecord 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiAppsIdPut(id: number, appRecord: AppRecord, options?: RawAxiosRequestConfig): AxiosPromise<AppRecord> {
-            return localVarFp.apiAppsIdPut(id, appRecord, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {AppRecord} appRecord 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiAppsPost(appRecord: AppRecord, options?: RawAxiosRequestConfig): AxiosPromise<AppRecord> {
-            return localVarFp.apiAppsPost(appRecord, options).then((request) => request(axios, basePath));
+        replace(id: number, appRecord: AppRecord, options?: RawAxiosRequestConfig): AxiosPromise<AppRecord> {
+            return localVarFp.replace(id, appRecord, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -397,12 +335,23 @@ export const AppsApiFactory = function (configuration?: Configuration, basePath?
 export class AppsApi extends BaseAPI {
     /**
      * 
+     * @param {AppRecord} appRecord 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AppsApi
      */
-    public apiAppsGet(options?: RawAxiosRequestConfig) {
-        return AppsApiFp(this.configuration).apiAppsGet(options).then((request) => request(this.axios, this.basePath));
+    public create(appRecord: AppRecord, options?: RawAxiosRequestConfig) {
+        return AppsApiFp(this.configuration).create(appRecord, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AppsApi
+     */
+    public getAll(options?: RawAxiosRequestConfig) {
+        return AppsApiFp(this.configuration).getAll(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -412,8 +361,8 @@ export class AppsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof AppsApi
      */
-    public apiAppsIdDelete(id: number, options?: RawAxiosRequestConfig) {
-        return AppsApiFp(this.configuration).apiAppsIdDelete(id, options).then((request) => request(this.axios, this.basePath));
+    public getById(id: number, options?: RawAxiosRequestConfig) {
+        return AppsApiFp(this.configuration).getById(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -423,8 +372,8 @@ export class AppsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof AppsApi
      */
-    public apiAppsIdGet(id: number, options?: RawAxiosRequestConfig) {
-        return AppsApiFp(this.configuration).apiAppsIdGet(id, options).then((request) => request(this.axios, this.basePath));
+    public remove(id: number, options?: RawAxiosRequestConfig) {
+        return AppsApiFp(this.configuration).remove(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -435,31 +384,8 @@ export class AppsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof AppsApi
      */
-    public apiAppsIdPatch(id: number, appRecord: AppRecord, options?: RawAxiosRequestConfig) {
-        return AppsApiFp(this.configuration).apiAppsIdPatch(id, appRecord, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {number} id 
-     * @param {AppRecord} appRecord 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AppsApi
-     */
-    public apiAppsIdPut(id: number, appRecord: AppRecord, options?: RawAxiosRequestConfig) {
-        return AppsApiFp(this.configuration).apiAppsIdPut(id, appRecord, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {AppRecord} appRecord 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AppsApi
-     */
-    public apiAppsPost(appRecord: AppRecord, options?: RawAxiosRequestConfig) {
-        return AppsApiFp(this.configuration).apiAppsPost(appRecord, options).then((request) => request(this.axios, this.basePath));
+    public replace(id: number, appRecord: AppRecord, options?: RawAxiosRequestConfig) {
+        return AppsApiFp(this.configuration).replace(id, appRecord, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

@@ -15,5 +15,4 @@
 
 
 export * from './apis/apps-api';
-export * from './apis/version-api';
 

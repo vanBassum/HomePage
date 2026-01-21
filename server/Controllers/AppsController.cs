@@ -1,114 +1,72 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Concurrent;
+using Microsoft.EntityFrameworkCore;
+using Server.Data;
+using Server.Models;
 
-namespace HomePage.Controllers;
+namespace Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AppsController : ControllerBase
 {
-    // Dummy in-memory storage
-    private static readonly ConcurrentDictionary<int, AppRecord> _apps = new();
-    private static int _nextId = 1;
+    private readonly AppDbContext _db;
 
-    static AppsController()
+    public AppsController(AppDbContext db)
     {
-        // Seed demo data once
-        if (_apps.IsEmpty)
-        {
-            _apps.TryAdd(1, new AppRecord(1, "Docs", "Internal documentation", "https://example.com/docs", null, "Work"));
-            _apps.TryAdd(2, new AppRecord(2, "Grafana", "Dashboards", "https://example.com/grafana", null, "Monitoring"));
-            _apps.TryAdd(3, new AppRecord(3, "GitHub", "Repositories", "https://github.com", null, "Dev"));
-            _nextId = 4;
-        }
+        _db = db;
     }
 
-    [HttpGet]
-    public ActionResult<IEnumerable<AppRecord>> List()
+    [HttpGet(Name = nameof(GetAll))]
+    public async Task<ActionResult<IEnumerable<AppRecord>>> GetAll(CancellationToken ct)
     {
-        return Ok(_apps.Values.OrderBy(a => a.Id));
+        var items = await _db.AppRecords
+            .AsNoTracking()
+            .OrderBy(a => a.Id)
+            .ToListAsync(ct);
+
+        return Ok(items);
     }
 
-    [HttpGet("{id:int}")]
-    public ActionResult<AppRecord> Get(int id)
+    [HttpGet("{id:int}", Name = nameof(GetById))]
+    public async Task<ActionResult<AppRecord>> GetById(int id, CancellationToken ct)
     {
-        return _apps.TryGetValue(id, out var existing)
-            ? Ok(existing)
-            : NotFound();
+        var entity = await _db.AppRecords.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id, ct);
+        if (entity is null) return NotFound();
+        return Ok(entity);
     }
 
-    [HttpPost]
-    public ActionResult<AppRecord> Create([FromBody] AppRecord request)
+    [HttpPost(Name = nameof(Create))]
+    public async Task<ActionResult<AppRecord>> Create([FromBody] AppRecord entity, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(entity.Name))
+            return BadRequest(new { error = "Name is required." });
+
+        _db.AppRecords.Add(entity);
+        await _db.SaveChangesAsync(ct);
+        return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);
+    }
+
+    [HttpPut("{id:int}", Name = nameof(Replace))]
+    public async Task<ActionResult<AppRecord>> Replace(int id, [FromBody] AppRecord request, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(request.Name))
             return BadRequest(new { error = "Name is required." });
 
-        var id = System.Threading.Interlocked.Increment(ref _nextId) - 1;
-
-        var created = new AppRecord(
-            Id: id,
-            Name: request.Name.Trim(),
-            Description: request.Description,
-            Url: request.Url,
-            IconUrl: request.IconUrl,
-            Category: request.Category
-        );
-
-        _apps[id] = created;
-
-        return CreatedAtAction(nameof(Get), new { id }, created);
+        var entity = await _db.AppRecords.FirstOrDefaultAsync(a => a.Id == id, ct);
+        if (entity is null) return NotFound();
+        await _db.SaveChangesAsync(ct);
+        return Ok(request);
     }
 
-    [HttpPut("{id:int}")]
-    public ActionResult<AppRecord> Replace(int id, [FromBody] AppRecord request)
+    [HttpDelete("{id:int}", Name = nameof(Remove))]
+    public async Task<IActionResult> Remove(int id, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(request.Name))
-            return BadRequest(new { error = "Name is required." });
+        var entity = await _db.AppRecords.FirstOrDefaultAsync(a => a.Id == id, ct);
+        if (entity is null) return NotFound();
 
-        if (!_apps.ContainsKey(id))
-            return NotFound();
+        _db.AppRecords.Remove(entity);
+        await _db.SaveChangesAsync(ct);
 
-        var updated = new AppRecord(
-            Id: id,
-            Name: request.Name.Trim(),
-            Description: request.Description,
-            Url: request.Url,
-            IconUrl: request.IconUrl,
-            Category: request.Category
-        );
-
-        _apps[id] = updated;
-        return Ok(updated);
-    }
-
-    [HttpPatch("{id:int}")]
-    public ActionResult<AppRecord> Patch(int id, [FromBody] AppRecord request)
-    {
-        if (!_apps.TryGetValue(id, out var existing))
-            return NotFound();
-
-        var name = request.Name is null ? existing.Name : request.Name.Trim();
-        if (string.IsNullOrWhiteSpace(name))
-            return BadRequest(new { error = "Name cannot be empty." });
-
-        var updated = existing with
-        {
-            Name = name,
-            Description = request.Description ?? existing.Description,
-            Url = request.Url ?? existing.Url,
-            IconUrl = request.IconUrl ?? existing.IconUrl,
-            Category = request.Category ?? existing.Category
-        };
-
-        _apps[id] = updated;
-        return Ok(updated);
-    }
-
-    [HttpDelete("{id:int}")]
-    public IActionResult Delete(int id)
-    {
-        return _apps.TryRemove(id, out _)
-            ? NoContent()
-            : NotFound();
+        return NoContent();
     }
 }
