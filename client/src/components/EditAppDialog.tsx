@@ -26,8 +26,8 @@ export function EditAppDialog({ open, onOpenChange, value, onSave, onDelete }: E
 
   const commit = () => {
     // Minimal validation; expand as needed
-    if (!draft.name.trim()) return
-    if (!draft.url?.trim()) return
+    if (!draft?.name?.trim()) return
+    if (!draft?.url?.trim()) return
 
     const cleaned: AppRecord = {
       ...draft,
