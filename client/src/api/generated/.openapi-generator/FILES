@@ -1,0 +1,14 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+apis/version-api.ts
+base.ts
+common.ts
+configuration.ts
+docs/VersionApi.md
+docs/VersionInfo.md
+git_push.sh
+index.ts
+models/index.ts
+models/version-info.ts

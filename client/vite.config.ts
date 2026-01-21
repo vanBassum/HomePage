@@ -1,23 +1,12 @@
-import path from "path"
-import tailwindcss from "@tailwindcss/vite"
-import react from "@vitejs/plugin-react"
-import { defineConfig } from "vite"
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
-// https://vite.dev/config/
+// Dev: Vite serves the client, and proxies /api/* to ASP.NET Core on port 5000
 export default defineConfig({
-  base: '/',
-  plugins: [react(), tailwindcss()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src")
-    },
-  },
+  plugins: [react()],
   server: {
-    port: 5173,
-    open: true,
-    host: true,
     proxy: {
-      "/api": "http://localhost:8080",
-    },
-  },
-})
+      "/api": "http://localhost:5000"
+    }
+  }
+});
