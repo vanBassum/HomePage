@@ -18,13 +18,14 @@ import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction, replaceWithSerializableTypeIfNeeded } from '../common';
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
 import type { AppRecord } from '../models';
 /**
  * AppsApi - axios parameter creator
+ * @export
  */
 export const AppsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
@@ -46,8 +47,8 @@ export const AppsApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -80,6 +81,7 @@ export const AppsApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarQueryParameter = {} as any;
 
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -111,8 +113,8 @@ export const AppsApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -147,8 +149,9 @@ export const AppsApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
-            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -185,8 +188,9 @@ export const AppsApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
-            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -219,8 +223,9 @@ export const AppsApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
-            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -237,6 +242,7 @@ export const AppsApiAxiosParamCreator = function (configuration?: Configuration)
 
 /**
  * AppsApi - functional programming interface
+ * @export
  */
 export const AppsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AppsApiAxiosParamCreator(configuration)
@@ -319,6 +325,7 @@ export const AppsApiFp = function(configuration?: Configuration) {
 
 /**
  * AppsApi - factory interface
+ * @export
  */
 export const AppsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = AppsApiFp(configuration)
@@ -383,12 +390,16 @@ export const AppsApiFactory = function (configuration?: Configuration, basePath?
 
 /**
  * AppsApi - object-oriented interface
+ * @export
+ * @class AppsApi
+ * @extends {BaseAPI}
  */
 export class AppsApi extends BaseAPI {
     /**
      * 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
+     * @memberof AppsApi
      */
     public apiAppsGet(options?: RawAxiosRequestConfig) {
         return AppsApiFp(this.configuration).apiAppsGet(options).then((request) => request(this.axios, this.basePath));
@@ -399,6 +410,7 @@ export class AppsApi extends BaseAPI {
      * @param {number} id 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
+     * @memberof AppsApi
      */
     public apiAppsIdDelete(id: number, options?: RawAxiosRequestConfig) {
         return AppsApiFp(this.configuration).apiAppsIdDelete(id, options).then((request) => request(this.axios, this.basePath));
@@ -409,6 +421,7 @@ export class AppsApi extends BaseAPI {
      * @param {number} id 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
+     * @memberof AppsApi
      */
     public apiAppsIdGet(id: number, options?: RawAxiosRequestConfig) {
         return AppsApiFp(this.configuration).apiAppsIdGet(id, options).then((request) => request(this.axios, this.basePath));
@@ -420,6 +433,7 @@ export class AppsApi extends BaseAPI {
      * @param {AppRecord} appRecord 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
+     * @memberof AppsApi
      */
     public apiAppsIdPatch(id: number, appRecord: AppRecord, options?: RawAxiosRequestConfig) {
         return AppsApiFp(this.configuration).apiAppsIdPatch(id, appRecord, options).then((request) => request(this.axios, this.basePath));
@@ -431,6 +445,7 @@ export class AppsApi extends BaseAPI {
      * @param {AppRecord} appRecord 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
+     * @memberof AppsApi
      */
     public apiAppsIdPut(id: number, appRecord: AppRecord, options?: RawAxiosRequestConfig) {
         return AppsApiFp(this.configuration).apiAppsIdPut(id, appRecord, options).then((request) => request(this.axios, this.basePath));
@@ -441,6 +456,7 @@ export class AppsApi extends BaseAPI {
      * @param {AppRecord} appRecord 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
+     * @memberof AppsApi
      */
     public apiAppsPost(appRecord: AppRecord, options?: RawAxiosRequestConfig) {
         return AppsApiFp(this.configuration).apiAppsPost(appRecord, options).then((request) => request(this.axios, this.basePath));

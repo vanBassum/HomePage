@@ -14,8 +14,23 @@
 
 
 
+/**
+ * 
+ * @export
+ * @interface VersionInfo
+ */
 export interface VersionInfo {
+    /**
+     * 
+     * @type {string}
+     * @memberof VersionInfo
+     */
     'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof VersionInfo
+     */
     'version': string;
 }
 

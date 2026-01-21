@@ -14,12 +14,47 @@
 
 
 
+/**
+ * 
+ * @export
+ * @interface AppRecord
+ */
 export interface AppRecord {
+    /**
+     * 
+     * @type {number}
+     * @memberof AppRecord
+     */
     'id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof AppRecord
+     */
     'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AppRecord
+     */
     'description': string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AppRecord
+     */
     'url': string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AppRecord
+     */
     'iconUrl': string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AppRecord
+     */
     'category': string | null;
 }
 
