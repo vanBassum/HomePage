@@ -24,14 +24,6 @@ function AppLogo({ app }: { app: AppRecord }) {
       src={app.iconUrl ?? "https://cdn.simpleicons.org/linktree"}
       alt={app.name}
       className="h-full w-full object-contain p-2"
-      onError={(ev) => {
-        const img = ev.currentTarget
-        try {
-          const u = new URL(app.url ?? "")
-          img.src = `${u.protocol}//${u.host}/favicon.ico`
-        } catch {
-        }
-      }}
     />
   )
 }
