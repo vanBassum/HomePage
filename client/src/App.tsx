@@ -1,6 +1,5 @@
+import { api, VersionInfo } from "@api";
 import { useEffect, useState } from "react";
-import { VersionApi, VersionInfo } from "./api/generated";
-
 
 
 export default function App() {
@@ -12,8 +11,8 @@ export default function App() {
 
     (async () => {
       try {
-        const versionApi = new VersionApi();
-        const result = await versionApi.getVersion();
+        
+        const result = await api.version.getVersion();
 
         if (cancelled) return;
 
