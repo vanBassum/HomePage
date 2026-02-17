@@ -1,13 +1,15 @@
 import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
 import { Card } from "@/components/ui/card"
 import { useMode } from "@/components/mode/mode-provider"
 
 type ClickableCardProps = {
   children: React.ReactNode
-  onActivate: () => void
+  onActivate?: () => void
   className?: string
   editClassName?: string
   viewClassName?: string
+  asChild?: boolean
 }
 
 export function ClickableCard({
@@ -16,6 +18,7 @@ export function ClickableCard({
   className,
   editClassName,
   viewClassName,
+  asChild,
 }: ClickableCardProps) {
   const { mode } = useMode()
   const isEdit = mode === "edit"
@@ -26,26 +29,32 @@ export function ClickableCard({
   const modeClass = isEdit
     ? [
         "hover:shadow-lg",
-        // shared “edit mode” affordance
         "border-dashed ring-1 ring-blue-500/30 bg-blue-500/5",
         editClassName ?? "",
       ].join(" ")
     : ["hover:shadow-md", viewClassName ?? ""].join(" ")
 
+  const Comp: any = asChild ? Slot : Card
+
+  // When rendered as <a>, do NOT add role/tabIndex or keyboard activation;
+  // the anchor handles accessibility + new-tab/middle-click natively.
+  const interactiveProps = asChild
+    ? {}
+    : {
+        role: "button",
+        tabIndex: 0,
+        onClick: onActivate,
+        onKeyDown: (e: React.KeyboardEvent) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault()
+            onActivate?.()
+          }
+        },
+      }
+
   return (
-    <Card
-      role="button"
-      tabIndex={0}
-      onClick={onActivate}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault()
-          onActivate()
-        }
-      }}
-      className={[base, modeClass, className ?? ""].join(" ")}
-    >
+    <Comp className={[base, modeClass, className ?? ""].join(" ")} {...interactiveProps}>
       {children}
-    </Card>
+    </Comp>
   )
 }
