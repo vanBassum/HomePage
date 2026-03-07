@@ -54,8 +54,15 @@ public class AppsController : ControllerBase
 
         var entity = await _db.AppRecords.FirstOrDefaultAsync(a => a.Id == id, ct);
         if (entity is null) return NotFound();
+
+        entity.Name = request.Name;
+        entity.Description = request.Description;
+        entity.Url = request.Url;
+        entity.IconUrl = request.IconUrl;
+        entity.Category = request.Category;
+
         await _db.SaveChangesAsync(ct);
-        return Ok(request);
+        return Ok(entity);
     }
 
     [HttpDelete("{id:int}", Name = nameof(Remove))]
