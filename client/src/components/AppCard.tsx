@@ -1,7 +1,7 @@
 import { Signal } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { checkAppStatus, openUrl, type AppStatus } from "@/lib/utils"
+import { checkAppStatus, normalizeUrl, openUrl, type AppStatus } from "@/lib/utils"
 import { useMode } from "@/components/mode/mode-provider"
 import { ClickableCard } from "@/components/ClickableCard"
 import React from "react"
@@ -34,7 +34,7 @@ type AppCardProps = {
 }
 
 async function getStatus(app: AppRecord): Promise<AppStatus> {
-  return checkAppStatus(app.url ?? "");
+  return checkAppStatus(normalizeUrl(app.url ?? ""));
 }
 
 const statusCache = new Map<number, AppStatus>()
@@ -79,7 +79,7 @@ export function AppCard({ app, onEdit }: AppCardProps) {
 
   const onActivate = () => {
     if (isEdit) onEdit?.(app)
-    else openUrl(app.url ?? "")
+    else openUrl(normalizeUrl(app.url ?? ""))
   }
 const isLink = !isEdit && app.url
 
@@ -90,7 +90,7 @@ return (
   >
     {isLink ? (
       <a
-        href={app.url!}
+        href={normalizeUrl(app.url!)}
         target="_blank"
         rel="noopener noreferrer"
         className="block h-full"
